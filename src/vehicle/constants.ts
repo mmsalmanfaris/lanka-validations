@@ -9,3 +9,4 @@ export const VEHICLE_PROVINCES: Record<string, string> = {
   UP: 'Uva Province',
   SG: 'Sabaragamuwa Province',
 };
+

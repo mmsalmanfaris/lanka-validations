@@ -77,3 +77,4 @@ export function validateNic(rawNic: unknown): ValidationResult<NicInfo> {
 
   return createSuccess(info);
 }
+

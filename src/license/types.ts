@@ -17,3 +17,4 @@ export interface DrivingLicenseInfo {
   /** If NIC-based, whether it is old or new NIC */
   nicFormat?: 'old' | 'new';
 }
+

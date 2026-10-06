@@ -47,3 +47,4 @@ describe('Postal Code Module', () => {
     expect(validatePostalCode('99999').code).toBe('POSTAL_CODE_OUT_OF_RANGE');
   });
 });
+

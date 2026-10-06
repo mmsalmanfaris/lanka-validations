@@ -43,3 +43,4 @@ export function parseDrivingLicense(rawLicense: unknown): DrivingLicenseInfo | n
 
   return null;
 }
+

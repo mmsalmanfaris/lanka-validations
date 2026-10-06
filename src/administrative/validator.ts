@@ -70,3 +70,4 @@ export function getProvinces(): ProvinceInfo[] {
 export function getDistricts(): DistrictInfo[] {
   return DISTRICTS;
 }
+

@@ -141,3 +141,4 @@ export function parseNic(rawNic: unknown): NicInfo | null {
     oldNic,
   };
 }
+

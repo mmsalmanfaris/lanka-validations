@@ -6,3 +6,4 @@ export interface DobOptions {
   /** Optional reference date for age calculation (defaults to current date) */
   referenceDate?: Date;
 }
+

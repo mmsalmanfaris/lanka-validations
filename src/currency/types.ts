@@ -23,3 +23,4 @@ export interface WordsOptions {
   /** Appends suffix, e.g. 'Only'. Default: 'Only' for English, '' for Sinhala/Tamil */
   suffix?: string;
 }
+

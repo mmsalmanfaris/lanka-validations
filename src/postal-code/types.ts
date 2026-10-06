@@ -8,3 +8,4 @@ export interface PostalCodeInfo {
   /** Primary city / post office name if matched */
   primaryCity?: string;
 }
+

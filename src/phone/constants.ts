@@ -71,3 +71,4 @@ export const SRI_LANKA_SHORT_CODES: Record<string, ShortCodeInfo> = {
   '1929': { code: '1929', name: 'ChildLine Sri Lanka', category: 'helpline' },
   '1925': { code: '1925', name: 'Consumer Affairs Authority', category: 'government' },
 };
+

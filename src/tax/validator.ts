@@ -82,3 +82,4 @@ export function validateVAT(vat: unknown): ValidationResult<string> {
 
   return createSuccess(cleaned);
 }
+

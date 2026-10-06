@@ -37,3 +37,4 @@ export function validateVehiclePlate(plate: unknown): ValidationResult<VehiclePl
 
   return createSuccess(info);
 }
+

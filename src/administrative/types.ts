@@ -13,3 +13,4 @@ export interface DistrictInfo {
   provinceCode: string;
   provinceName: string;
 }
+

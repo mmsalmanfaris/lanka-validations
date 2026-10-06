@@ -54,3 +54,4 @@ describe('DOB Module', () => {
     expect(err.code).toBe('DOB_INVALID');
   });
 });
+

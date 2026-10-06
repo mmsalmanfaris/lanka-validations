@@ -29,3 +29,4 @@ export interface NicInfo {
   /** Standardized 9-digit + V equivalent (if year 1900-1999) */
   oldNic: string | null;
 }
+

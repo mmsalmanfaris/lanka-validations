@@ -33,3 +33,4 @@ export function parseLKR(input: unknown): number | null {
 
   return isNegative ? -num : num;
 }
+

@@ -391,3 +391,4 @@ export function lkrToWords(amount: number, options?: WordsOptions): string {
 
   return (isNeg ? 'Minus ' : '') + result.trim();
 }
+

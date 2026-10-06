@@ -53,3 +53,4 @@ export function validateDrivingLicense(license: unknown): ValidationResult<Drivi
 
   return createSuccess(info);
 }
+

@@ -73,3 +73,4 @@ export function validatePostalCode(code: unknown): ValidationResult<PostalCodeIn
 
   return createSuccess(info);
 }
+

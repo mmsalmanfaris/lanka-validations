@@ -20,3 +20,4 @@ export interface VehiclePlateInfo {
   /** Standardized pretty format (e.g. 'WP CAB-1234') */
   formatted: string;
 }
+

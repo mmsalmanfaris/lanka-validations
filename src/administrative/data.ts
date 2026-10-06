@@ -93,3 +93,4 @@ export const DISTRICTS: DistrictInfo[] = [
   { name: 'Ratnapura', nameSi: 'රත්නපුර', nameTa: 'இரத்தினபுரி', provinceCode: 'SG', provinceName: 'Sabaragamuwa' },
   { name: 'Kegalle', nameSi: 'කෑගල්ල', nameTa: 'கேகாலை', provinceCode: 'SG', provinceName: 'Sabaragamuwa' },
 ];
+

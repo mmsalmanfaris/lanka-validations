@@ -80,3 +80,4 @@ export const DMT_LICENSE_CATEGORIES: Record<string, LicenseCategoryInfo> = {
     minAge: 21,
   },
 };
+

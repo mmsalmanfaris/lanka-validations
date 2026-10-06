@@ -50,3 +50,4 @@ describe('Gender Module', () => {
     expect(validateGender('unknown').code).toBe('GENDER_INVALID');
   });
 });
+

@@ -35,3 +35,4 @@ export function formatNic(nic: unknown, style?: NicFormatStyle): string | null {
 
   return info.nic;
 }
+

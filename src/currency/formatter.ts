@@ -68,3 +68,4 @@ export function formatLKR(amount: number, options?: FormatLkrOptions): string {
 
   return `${sym}${formattedNum}`;
 }
+

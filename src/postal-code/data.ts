@@ -94,3 +94,4 @@ export const MAJOR_CITIES: Record<string, string> = {
   '90100': 'Bandarawela',
   '91000': 'Monaragala',
 };
+

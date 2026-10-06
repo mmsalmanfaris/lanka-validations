@@ -12,3 +12,4 @@ export interface PassportInfo {
   /** Whether the passport matches the new e-Passport pattern */
   isEPassport: boolean;
 }
+

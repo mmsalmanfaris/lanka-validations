@@ -1,7 +1,7 @@
 {
   "name": "lanka-validations",
   "version": "1.0.0",
-  "description": "Ultra-fast, zero-dependency Sri Lankan data validation library for TypeScript & JavaScript. Validate and parse NIC, Phone Numbers, Passports, Driving Licenses, Vehicle Number Plates, LKR Currency, DOB, Gender, Postal Codes, CBSL Bank Codes, and TIN.",
+  "description": "High-performance, zero-dependency Sri Lankan data validation library for TypeScript and JavaScript. Validate and parse Sri Lankan National Identity Card (NIC), phone numbers, passport, driving license, vehicle number plates, LKR currency, date of birth (DOB), gender, postal codes, CBSL bank codes, and TIN.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -80,10 +80,15 @@
   "files": [
     "dist"
   ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsup && tsc --declaration --emitDeclarationOnly",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "prepublishOnly": "npm run build && npm run test"
   },
   "repository": {
@@ -99,27 +104,34 @@
     "validation",
     "validator",
     "nic",
-    "nic-validator",
     "sri-lankan-nic",
+    "nic-validator",
     "national-identity-card",
     "phone-validator",
-    "lanka-phone",
+    "sri-lanka-phone",
+    "passport-validator",
     "driving-license",
-    "passport",
-    "vehicle-number-plate",
+    "vehicle-plates",
+    "number-plate",
     "lkr",
+    "sri-lankan-rupee",
     "currency",
-    "sinhala",
-    "tamil",
+    "number-to-words",
+    "dob",
+    "gender",
+    "postal-code",
     "cbsl",
     "bank-codes",
-    "postal-code",
     "tin",
+    "vat",
     "kyc",
     "form-validation",
-    "typescript"
+    "sinhala",
+    "tamil",
+    "typescript",
+    "zero-dependency"
   ],
-  "author": "M.M. Salman Faris <mmsalmanfaaris01@gmail.com>",
+  "author": "M.M. Salman Faris <mmsalmanfaris@outlook.com>",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.13.1",

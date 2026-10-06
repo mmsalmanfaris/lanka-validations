@@ -37,3 +37,4 @@ describe('Tax Module', () => {
     expect(validateVAT('').isValid).toBe(false);
   });
 });
+

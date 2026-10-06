@@ -31,3 +31,4 @@ export function convertNewToOldNic(
   // Replace the default 'V' with chosen suffix
   return info.oldNic.slice(0, 9) + suffix;
 }
+

@@ -32,3 +32,4 @@ export interface ShortCodeInfo {
   name: string;
   category: 'emergency' | 'government' | 'utility' | 'helpline';
 }
+

@@ -133,3 +133,4 @@ export const rules = {
     return matchesNicGender(val, nic) ? true : 'Gender does not match NIC';
   },
 };
+

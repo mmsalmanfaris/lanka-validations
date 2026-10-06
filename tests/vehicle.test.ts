@@ -67,3 +67,4 @@ describe('Vehicle Number Plate Module', () => {
     expect(validateVehiclePlate('invalid').isValid).toBe(false);
   });
 });
+

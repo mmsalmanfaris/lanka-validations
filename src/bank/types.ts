@@ -12,3 +12,4 @@ export interface BankInfo {
   /** Type of banking institution */
   category: 'licensed_commercial' | 'licensed_specialized';
 }
+
