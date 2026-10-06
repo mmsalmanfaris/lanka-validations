@@ -105,3 +105,4 @@ For questions or security concerns, reach out to the project maintainer:
 - Author: M.M. Salman Faris
 - Email: [mmsalmanfaris@outlook.com](mailto:mmsalmanfaris@outlook.com)
 - GitHub: [@mmsalmanfaris](https://github.com/mmsalmanfaris)
+
