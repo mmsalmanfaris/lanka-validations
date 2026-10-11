@@ -1,6 +1,6 @@
-import type { DistrictInfo, ProvinceInfo } from './types';
+import type { DistrictInfo, ReadonlyProvinceInfo } from './types';
 
-export const PROVINCES: ProvinceInfo[] = [
+export const PROVINCES: readonly ReadonlyProvinceInfo[] = [
   {
     code: 'WP',
     name: 'Western',
@@ -66,7 +66,7 @@ export const PROVINCES: ProvinceInfo[] = [
   },
 ];
 
-export const DISTRICTS: DistrictInfo[] = [
+export const DISTRICTS: readonly Readonly<DistrictInfo>[] = [
   { name: 'Colombo', nameSi: 'කොළඹ', nameTa: 'கொழும்பு', provinceCode: 'WP', provinceName: 'Western' },
   { name: 'Gampaha', nameSi: 'ගම්පහ', nameTa: 'கம்பஹா', provinceCode: 'WP', provinceName: 'Western' },
   { name: 'Kalutara', nameSi: 'කළුතර', nameTa: 'களுத்துறை', provinceCode: 'WP', provinceName: 'Western' },
@@ -94,3 +94,11 @@ export const DISTRICTS: DistrictInfo[] = [
   { name: 'Kegalle', nameSi: 'කෑගල්ල', nameTa: 'கேகாலை', provinceCode: 'SG', provinceName: 'Sabaragamuwa' },
 ];
 
+
+for (const province of PROVINCES) {
+  Object.freeze(province.districts);
+  Object.freeze(province);
+}
+Object.freeze(PROVINCES);
+for (const district of DISTRICTS) Object.freeze(district);
+Object.freeze(DISTRICTS);

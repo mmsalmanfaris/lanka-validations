@@ -1,5 +1,5 @@
 import { parseNic } from './parser';
-import type { NicFormat } from './types';
+import type { NicFormat, NicOptions } from './types';
 
 export type NicFormatStyle = NicFormat | 'spaced-old' | 'spaced-new';
 
@@ -11,8 +11,8 @@ export type NicFormatStyle = NicFormat | 'spaced-old' | 'spaced-new';
  * - formatNic('921234567v', 'spaced-old') -> '92123 4567 V'
  * - formatNic('199212304567', 'spaced-new') -> '1992 1230 4567'
  */
-export function formatNic(nic: unknown, style?: NicFormatStyle): string | null {
-  const info = parseNic(nic);
+export function formatNic(nic: unknown, style?: NicFormatStyle, options?: NicOptions): string | null {
+  const info = parseNic(nic, options);
   if (!info) return null;
 
   if (style === 'old') {

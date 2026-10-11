@@ -19,7 +19,7 @@ export function getBankByCode(code: unknown): BankInfo | null {
   }
   const cleaned = cleanString(code);
   return /^[0-9]{4}$/.test(cleaned) && Object.hasOwn(CBSL_BANKS, cleaned)
-    ? CBSL_BANKS[cleaned]
+    ? { ...CBSL_BANKS[cleaned] }
     : null;
 }
 
@@ -27,7 +27,7 @@ export function getBankByCode(code: unknown): BankInfo | null {
  * Returns the list of all CBSL recognized banks.
  */
 export function getBankList(): BankInfo[] {
-  return Object.values(CBSL_BANKS);
+  return Object.values(CBSL_BANKS).map(bank => ({ ...bank }));
 }
 
 /**

@@ -30,7 +30,7 @@ export function getProvinceInfo(p: unknown): ProvinceInfo | null {
       prov.nameSi.toLowerCase() === cleaned ||
       prov.nameTa.toLowerCase() === cleaned
     ) {
-      return prov;
+      return { ...prov, districts: [...prov.districts] };
     }
   }
 
@@ -50,7 +50,7 @@ export function getDistrictInfo(d: unknown): DistrictInfo | null {
       dist.nameSi.toLowerCase() === cleaned ||
       dist.nameTa.toLowerCase() === cleaned
     ) {
-      return dist;
+      return { ...dist };
     }
   }
 
@@ -61,13 +61,13 @@ export function getDistrictInfo(d: unknown): DistrictInfo | null {
  * Returns all 9 Sri Lankan provinces with details.
  */
 export function getProvinces(): ProvinceInfo[] {
-  return PROVINCES;
+  return PROVINCES.map(prov => ({ ...prov, districts: [...prov.districts] }));
 }
 
 /**
  * Returns all 25 Sri Lankan districts with details.
  */
 export function getDistricts(): DistrictInfo[] {
-  return DISTRICTS;
+  return DISTRICTS.map(dist => ({ ...dist }));
 }
 

@@ -1,5 +1,8 @@
 import type { ValidationResult } from './types';
 
+/** Maximum raw scalar string length, in UTF-16 code units, before normalization. */
+export const MAX_INPUT_LENGTH = 1024;
+
 /**
  * Trims strings and removes zero-width spaces/BOMs. Accepts finite numbers
  * explicitly; rejects other types without invoking user-defined coercion.
@@ -8,6 +11,7 @@ export function cleanString(input: unknown): string {
   if (typeof input !== 'string') {
     return typeof input === 'number' && Number.isFinite(input) ? String(input) : '';
   }
+  if (input.length > MAX_INPUT_LENGTH) return '';
   return input.trim().replace(/[\u200B\uFEFF]/g, '');
 }
 

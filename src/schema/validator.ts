@@ -11,6 +11,7 @@ import { validatePostalCode } from '../postal-code/validator';
 import { isValidBankCode } from '../bank/validator';
 import { validateTIN, validateVAT } from '../tax/validator';
 import type { DobOptions } from '../dob/types';
+import type { NicOptions } from '../nic/types';
 
 export type ValidatorRule<T = unknown> = (
   value: unknown,
@@ -110,7 +111,7 @@ export function createSchemaValidator<T extends Record<string, unknown> = Record
  * Pre-packaged validation rules for convenience
  */
 export const rules = {
-  nic: (): ValidatorRule => (val) => validateNic(val),
+  nic: (opts?: NicOptions): ValidatorRule => (val) => validateNic(val, opts),
   phone: (): ValidatorRule => (val) => validatePhone(val),
   passport: (): ValidatorRule => (val) => validatePassport(val),
   drivingLicense: (): ValidatorRule => (val) => validateDrivingLicense(val),

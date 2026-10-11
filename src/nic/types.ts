@@ -1,3 +1,8 @@
+/** Date-only comparisons and ages use the UTC calendar date. */
+export interface NicOptions {
+  referenceDate?: Date;
+}
+
 export type NicFormat = 'old' | 'new';
 export type Gender = 'male' | 'female';
 

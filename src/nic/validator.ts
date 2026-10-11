@@ -1,35 +1,35 @@
 import { cleanString, createFailure, createSuccess } from '../common/utils';
 import type { ValidationResult } from '../common/types';
 import { parseNic } from './parser';
-import type { NicInfo } from './types';
+import type { NicInfo, NicOptions } from './types';
 
 /**
  * Checks whether an input string is a valid Sri Lankan NIC (old or new format).
  */
-export function isValidNic(nic: unknown): boolean {
-  return parseNic(nic) !== null;
+export function isValidNic(nic: unknown, options?: NicOptions): boolean {
+  return parseNic(nic, options) !== null;
 }
 
 /**
  * Checks specifically whether an input is a valid 10-character Old NIC (9 digits + V/X).
  */
-export function isValidOldNic(nic: unknown): boolean {
-  const info = parseNic(nic);
+export function isValidOldNic(nic: unknown, options?: NicOptions): boolean {
+  const info = parseNic(nic, options);
   return info !== null && info.format === 'old';
 }
 
 /**
  * Checks specifically whether an input is a valid 12-digit New NIC.
  */
-export function isValidNewNic(nic: unknown): boolean {
-  const info = parseNic(nic);
+export function isValidNewNic(nic: unknown, options?: NicOptions): boolean {
+  const info = parseNic(nic, options);
   return info !== null && info.format === 'new';
 }
 
 /**
  * Comprehensive NIC validation returning structured ValidationResult with error messages and codes.
  */
-export function validateNic(rawNic: unknown): ValidationResult<NicInfo> {
+export function validateNic(rawNic: unknown, options?: NicOptions): ValidationResult<NicInfo> {
   const cleaned = cleanString(rawNic).toUpperCase();
 
   if (!cleaned) {
@@ -46,7 +46,11 @@ export function validateNic(rawNic: unknown): ValidationResult<NicInfo> {
     );
   }
 
-  const info = parseNic(cleaned);
+  const referenceDate = options?.referenceDate ?? new Date();
+  if (!(referenceDate instanceof Date) || !Number.isFinite(referenceDate.getTime())) {
+    return createFailure('Invalid NIC reference date.', 'NIC_INVALID_OPTIONS');
+  }
+  const info = parseNic(cleaned, { referenceDate });
   if (!info) {
     const rawDays = isOldPattern
       ? parseInt(cleaned.substring(2, 5), 10)
@@ -56,7 +60,7 @@ export function validateNic(rawNic: unknown): ValidationResult<NicInfo> {
       ? 1900 + parseInt(cleaned.substring(0, 2), 10)
       : parseInt(cleaned.substring(0, 4), 10);
 
-    const currentYear = new Date().getFullYear();
+    const currentYear = referenceDate.getUTCFullYear();
     if (year > currentYear || year < 1850) {
       return createFailure(
         `Invalid birth year in NIC: ${year}. Must be between 1850 and ${currentYear}.`,
@@ -72,7 +76,7 @@ export function validateNic(rawNic: unknown): ValidationResult<NicInfo> {
       );
     }
 
-    return createFailure('Invalid NIC number.', 'NIC_INVALID');
+    return createFailure('Date of birth encoded in NIC is in the future.', 'NIC_FUTURE_DOB');
   }
 
   return createSuccess(info);

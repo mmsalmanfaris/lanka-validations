@@ -14,3 +14,8 @@ export interface DistrictInfo {
   provinceName: string;
 }
 
+
+/** Immutable public reference-table record, including its nested district list. */
+export type ReadonlyProvinceInfo = Readonly<Omit<ProvinceInfo, 'districts'>> & {
+  readonly districts: readonly string[];
+};

@@ -21,52 +21,26 @@ function validOptions(options?: DobOptions): boolean {
  */
 export function parseDob(input: unknown): Date | null {
   if (input instanceof Date) {
-    return isNaN(input.getTime()) ? null : input;
+    if (!Number.isFinite(input.getTime())) return null;
+    const date = new Date(input.getTime());
+    date.setUTCHours(0, 0, 0, 0);
+    return date;
   }
-
+  if (typeof input !== 'string') return null;
   const str = cleanString(input);
-  if (!str) return null;
-
-  // YYYY-MM-DD or YYYY/MM/DD
-  const isoMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
-  if (isoMatch) {
-    const y = parseInt(isoMatch[1], 10);
-    const m = parseInt(isoMatch[2], 10);
-    const d = parseInt(isoMatch[3], 10);
-    const date = new Date(Date.UTC(y, m - 1, d));
-    if (
-      date.getUTCFullYear() === y &&
-      date.getUTCMonth() === m - 1 &&
-      date.getUTCDate() === d
-    ) {
-      return date;
-    }
-    return null;
-  }
-
-  // DD-MM-YYYY or DD/MM/YYYY
-  const dmyMatch = str.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
-  if (dmyMatch) {
-    const d = parseInt(dmyMatch[1], 10);
-    const m = parseInt(dmyMatch[2], 10);
-    const y = parseInt(dmyMatch[3], 10);
-    const date = new Date(Date.UTC(y, m - 1, d));
-    if (
-      date.getUTCFullYear() === y &&
-      date.getUTCMonth() === m - 1 &&
-      date.getUTCDate() === d
-    ) {
-      return date;
-    }
-    return null;
-  }
-
-  const timestamp = Date.parse(str);
-  if (!isNaN(timestamp)) {
-    return new Date(timestamp);
-  }
-
-  return null;
+  // Require two-digit month/day and matching separators. No Date.parse fallback.
+  const iso = /^(\d{4})([-/])(\d{2})\2(\d{2})$/.exec(str);
+  const dmy = /^(\d{2})([-/])(\d{2})\2(\d{4})$/.exec(str);
+  if (!iso && !dmy) return null;
+  const parts = (iso ?? dmy)!;
+  const year = Number(iso ? parts[1] : parts[4]);
+  const month = Number(parts[3]);
+  const day = Number(iso ? parts[4] : parts[1]);
+  // setUTCFullYear avoids Date.UTC's special treatment of years 0–99.
+  const date = new Date(0);
+  date.setUTCFullYear(year, month - 1, day);
+  return year >= 1 && date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 && date.getUTCDate() === day ? date : null;
 }
 
 /**

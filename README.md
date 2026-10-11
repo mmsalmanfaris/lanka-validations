@@ -472,6 +472,10 @@ rejected without calling user-defined string conversion. DOB functions additiona
 accept valid `Date` objects. Use strings for identifiers to preserve leading zeros
 and avoid JavaScript numeric precision loss. Strings are trimmed, and zero-width
 spaces/BOMs are removed by the common normalizer.
+Raw strings longer than `MAX_INPUT_LENGTH` (1024 UTF-16 code units) are rejected
+before trimming, case conversion, or separator removal. The limit includes whitespace
+and invisible characters; inputs are never truncated. This is a library resource
+limit, not an official identifier-length rule. DOB inputs are restricted as below.
 
 - Bank codes must normalize to four ASCII digits and belong to the bank table.
 - Postal codes accept one to five ASCII digits (or integers from 0 to 99999),
@@ -499,6 +503,23 @@ spaces/BOMs are removed by the common normalizer.
   supplied reference date must be valid. Invalid options return `false` from
   `isValidDob`, `DOB_INVALID_OPTIONS` from `validateDob`, and an invalid age
   reference returns `null` from `calculateAge`.
+- DOB strings must use exactly `YYYY-MM-DD`, `YYYY/MM/DD`, `DD-MM-YYYY`, or
+  `DD/MM/YYYY`, with two-digit months/days and consistent separators. Numbers,
+  timestamps, month names, and other `Date.parse` formats are rejected. Dates must
+  exist in the calendar. `Date` inputs use their **UTC calendar date**, are copied,
+  and normalized to UTC midnight. Age and future-date checks use UTC, independently
+  of the host time zone; a local midnight Date can represent the previous UTC day.
+- NIC parsing and boolean/detailed validation accept `{ referenceDate: Date }`
+  as an optional second argument. They use one UTC reference for both year and
+  age checks and reject future DOBs within the same year (`NIC_FUTURE_DOB`).
+  Invalid references produce `NIC_INVALID_OPTIONS` in detailed validation.
+  Converters accept the same option; `formatNic` accepts it as a third argument,
+  and `rules.nic(options)` supports it in schemas.
+- Bank, province, and district getters return independent mutable copies, including
+  province district arrays. Changing a returned record cannot affect subsequent
+  lookups. Exported `CBSL_BANKS`, `PROVINCES`, and `DISTRICTS` tables are deeply
+  frozen with readonly declaration types. Consumers that mutated these shared
+  exports must instead use getter copies; direct mutation now fails.
 - Schema validation accepts plain or null-prototype records. Invalid roots return
   an error under `$root`. The `errors` dictionary has no prototype, so fields such
   as `__proto__` work normally. Use `Object.hasOwn(errors, field)` instead of
@@ -511,6 +532,13 @@ range errors are intentional changes from earlier permissive behavior.
 The implementation follows [OWASP input-validation guidance](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html),
 [own-property lookup semantics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwn),
 and [finite-number checks](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite).
+
+**NIC day-60 research (12 October 2026):** the library retains its legacy mapping
+of day 60 to February 28 in non-leap years, and February 29 in leap years.
+The [DRP FAQ](https://drp.gov.lk/en/faq.php) explains conversion to 12-digit numbers
+but does not establish this day-of-year rule. Targeted DRP searches did not find
+an authoritative rule. Tests preserve compatibility; they do not certify that
+mapping as official. No leap-day policy change has been made without that evidence.
 
 ## Contributing
 
