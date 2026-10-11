@@ -48,16 +48,24 @@ export class SchemaValidator<T extends Record<string, unknown> = Record<string, 
   /**
    * Validates input data against all configured rules
    */
-  validate(data: Record<string, unknown>): SchemaValidationResult {
-    const errors: Record<string, string> = {};
+  validate(data: unknown): SchemaValidationResult {
+    const errors: Record<string, string> = Object.create(null);
     const errorList: { field: string; message: string }[] = [];
+
+    if (data === null || typeof data !== 'object' ||
+        (Object.getPrototypeOf(data) !== Object.prototype && Object.getPrototypeOf(data) !== null)) {
+      const message = 'Expected a form data object.';
+      errors['$root'] = message;
+      return { isValid: false, errors, errorList: [{ field: '$root', message }] };
+    }
+    const formData = data as Record<string, unknown>;
 
     for (const [field, rules] of this.rules.entries()) {
       const fieldStr = String(field);
-      const val = data[fieldStr];
+      const val = Object.hasOwn(formData, fieldStr) ? formData[fieldStr] : undefined;
 
       for (const rule of rules) {
-        const res = rule(val, data);
+        const res = rule(val, formData);
 
         if (typeof res === 'boolean') {
           if (!res) {

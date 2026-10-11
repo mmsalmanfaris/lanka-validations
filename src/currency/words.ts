@@ -344,9 +344,21 @@ export function lkrToWords(amount: number, options?: WordsOptions): string {
   const includeCents = options?.includeCents ?? true;
   const isNeg = amount < 0;
   const absAmount = Math.abs(amount);
-
-  const rupees = Math.floor(absAmount);
-  const cents = Math.round((absAmount - rupees) * 100);
+  // Each scale helper supports counts below 1000. Reject unsupported scales
+  // instead of returning incorrect words, including when rounding crosses a limit.
+  const limit = lang === 'en' ? 1e12 : 1e9;
+  if (!Number.isFinite(amount) || absAmount >= limit) {
+    throw new RangeError(`Amount must be finite with magnitude below ${limit} rupees.`);
+  }
+  // Shift the shortest decimal representation, avoiding e.g. 1.005 * 100.
+  // Round half away from zero, once, before splitting rupees and cents.
+  const [coefficient, exponent = '0'] = absAmount.toString().split('e');
+  const minorUnits = Math.round(Number(`${coefficient}e${Number(exponent) + 2}`));
+  if (minorUnits >= limit * 100) {
+    throw new RangeError('Rounded amount exceeds the supported word scale.');
+  }
+  const rupees = Math.floor(minorUnits / 100);
+  const cents = minorUnits % 100;
 
   if (lang === 'si') {
     let text = `රුපියල් ${sinhalaIntegerToWords(rupees)}`;

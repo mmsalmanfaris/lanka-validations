@@ -8,12 +8,12 @@ import type { PostalCodeInfo } from './types';
  */
 export function normalizePostalCode(input: unknown): string | null {
   if (typeof input === 'number') {
-    if (input < 0 || input > 99999) return null;
+    if (!Number.isInteger(input) || input < 0 || input > 99999) return null;
     return padZero(input, 5);
   }
 
-  const cleaned = cleanString(input).replace(/\D/g, '');
-  if (!cleaned) return null;
+  const cleaned = cleanString(input);
+  if (!/^[0-9]{1,5}$/.test(cleaned)) return null;
 
   if (cleaned.length <= 5) {
     return cleaned.padStart(5, '0');

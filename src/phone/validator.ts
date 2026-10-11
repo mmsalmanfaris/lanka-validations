@@ -10,6 +10,12 @@ export function isValidPhone(phone: unknown): boolean {
   return parsePhone(phone) !== null;
 }
 
+/** Validates a full contact number, excluding service and emergency short codes. */
+export function isValidContactPhone(phone: unknown): boolean {
+  const info = parsePhone(phone);
+  return info !== null && info.type !== 'short_code';
+}
+
 /**
  * Validates whether the input is a valid Sri Lankan mobile phone number (Dialog, Mobitel, Hutch, Airtel).
  */

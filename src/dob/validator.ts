@@ -3,6 +3,18 @@ import type { ValidationResult } from '../common/types';
 import { parseNic } from '../nic/parser';
 import type { DobOptions } from './types';
 
+function validOptions(options?: DobOptions): boolean {
+  if (options?.referenceDate !== undefined &&
+      (!(options.referenceDate instanceof Date) || !Number.isFinite(options.referenceDate.getTime()))) {
+    return false;
+  }
+  const { minAge, maxAge } = options ?? {};
+  for (const age of [minAge, maxAge]) {
+    if (age !== undefined && (!Number.isInteger(age) || age < 0)) return false;
+  }
+  return minAge === undefined || maxAge === undefined || minAge <= maxAge;
+}
+
 /**
  * Parses various date formats into a Date object.
  * Supports: Date object, 'YYYY-MM-DD', 'YYYY/MM/DD', 'DD-MM-YYYY', 'DD/MM/YYYY'.
@@ -61,6 +73,7 @@ export function parseDob(input: unknown): Date | null {
  * Calculates current age in full completed years.
  */
 export function calculateAge(dobInput: unknown, referenceDate?: Date): number | null {
+  if (!validOptions({ referenceDate })) return null;
   const dob = parseDob(dobInput);
   if (!dob) return null;
 
@@ -79,6 +92,7 @@ export function calculateAge(dobInput: unknown, referenceDate?: Date): number | 
  * Validates whether an input is a valid Date of Birth.
  */
 export function isValidDob(input: unknown, options?: DobOptions): boolean {
+  if (!validOptions(options)) return false;
   const dob = parseDob(input);
   if (!dob) return false;
 
@@ -129,6 +143,9 @@ export function validateDob(
   input: unknown,
   options?: DobOptions
 ): ValidationResult<{ dob: Date; age: number; isoDate: string }> {
+  if (!validOptions(options)) {
+    return createFailure('Invalid date of birth validation options.', 'DOB_INVALID_OPTIONS');
+  }
   const dob = parseDob(input);
   if (!dob) {
     return createFailure('Invalid Date of Birth format.', 'DOB_INVALID');

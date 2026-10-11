@@ -464,6 +464,54 @@ matchesNicGender('female', userNic); // false (Gender mismatch)
 
 ---
 
+## Input contracts and validation safety
+
+Scalar parsers and validators accept strings and finite numbers where their format
+matches. Objects, arrays, booleans, bigint, symbols, `NaN`, and infinities are
+rejected without calling user-defined string conversion. DOB functions additionally
+accept valid `Date` objects. Use strings for identifiers to preserve leading zeros
+and avoid JavaScript numeric precision loss. Strings are trimmed, and zero-width
+spaces/BOMs are removed by the common normalizer.
+
+- Bank codes must normalize to four ASCII digits and belong to the bank table.
+- Postal codes accept one to five ASCII digits (or integers from 0 to 99999),
+  padded to five digits. Letters, embedded separators, and fractions are rejected.
+  Lookup still checks known ranges, not exact postal assignment.
+- Short codes must contain only their three or four digits after trimming.
+  `isValidPhone` includes short codes; use `isValidContactPhone` to exclude them,
+  or `isValidMobile` for mobile-only fields. Full numbers retain support for
+  spaces, hyphens, parentheses, dots, slashes, and a leading international `+`.
+- `parseLKR` accepts ungrouped, Western (`1,234,567`), and South Asian
+  (`12,34,567`) grouping. A single currency symbol may precede or follow the
+  amount. Negatives use a leading minus or enclosing parentheses. Malformed
+  grouping, embedded/repeated symbols, and non-finite results are rejected.
+  Magnitudes must not exceed exported `MAX_LKR_AMOUNT`
+  (`Number.MAX_SAFE_INTEGER / 100`). Parsing returns an approximate JavaScript
+  number without rounding fractional digits; it is not an exact decimal-money API.
+- `lkrToWords` rounds the number's shortest decimal representation to cents,
+  with ties away from zero, before splitting rupees and cents. This includes
+  carrying 100 cents into the next rupee. `includeCents: false` hides the cents
+  after rounding. Rounded magnitudes must be below 1 trillion rupees for English
+  and 1 billion for Sinhala/Tamil; invalid or unsupported amounts throw
+  `RangeError`. Existing Sinhala/Tamil vocabulary has not received a new
+  native-speaker review.
+- DOB age bounds must be non-negative integers with `minAge <= maxAge`, and a
+  supplied reference date must be valid. Invalid options return `false` from
+  `isValidDob`, `DOB_INVALID_OPTIONS` from `validateDob`, and an invalid age
+  reference returns `null` from `calculateAge`.
+- Schema validation accepts plain or null-prototype records. Invalid roots return
+  an error under `$root`. The `errors` dictionary has no prototype, so fields such
+  as `__proto__` work normally. Use `Object.hasOwn(errors, field)` instead of
+  `errors.hasOwnProperty(field)`. Rule exceptions still propagate to the caller.
+
+These checks validate supported formats and semantics, not identity, account
+ownership, or official registration. The stricter rejection rules and word-conversion
+range errors are intentional changes from earlier permissive behavior.
+
+The implementation follows [OWASP input-validation guidance](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html),
+[own-property lookup semantics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwn),
+and [finite-number checks](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite).
+
 ## Contributing
 
 We welcome contributions from the community. Please read our [Contribution Guidelines](CONTRIBUTING.md) before submitting pull requests. Note that all pull requests must be made against the **`development`** branch.

@@ -12,6 +12,7 @@ import type { PhoneInfo, PhoneType } from './types';
  */
 export function normalizePhoneNumber(raw: unknown): string {
   let cleaned = cleanString(raw).replace(/[\s\-()./]/g, '');
+  if (!/^\+?[0-9]+$/.test(cleaned)) return '';
 
   if (cleaned.startsWith('+94')) {
     cleaned = '0' + cleaned.slice(3);
@@ -35,9 +36,8 @@ export function parsePhone(rawPhone: unknown): PhoneInfo | null {
   if (!raw) return null;
 
   // Check short codes first (119, 1990, etc.)
-  const digitsOnly = raw.replace(/\D/g, '');
-  if (SRI_LANKA_SHORT_CODES[digitsOnly]) {
-    const sc = SRI_LANKA_SHORT_CODES[digitsOnly];
+  const digitsOnly = raw;
+  if (/^[0-9]{3,4}$/.test(digitsOnly) && Object.hasOwn(SRI_LANKA_SHORT_CODES, digitsOnly)) {
     return {
       raw,
       normalized: digitsOnly,

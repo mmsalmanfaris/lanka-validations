@@ -7,11 +7,7 @@ import type { BankInfo } from './types';
  * Validates whether the given code is a valid 4-digit CBSL bank code.
  */
 export function isValidBankCode(code: unknown): boolean {
-  if (typeof code === 'number') {
-    code = padZero(code, 4);
-  }
-  const cleaned = cleanString(code);
-  return Boolean(CBSL_BANKS[cleaned]);
+  return getBankByCode(code) !== null;
 }
 
 /**
@@ -22,7 +18,9 @@ export function getBankByCode(code: unknown): BankInfo | null {
     code = padZero(code, 4);
   }
   const cleaned = cleanString(code);
-  return CBSL_BANKS[cleaned] ?? null;
+  return /^[0-9]{4}$/.test(cleaned) && Object.hasOwn(CBSL_BANKS, cleaned)
+    ? CBSL_BANKS[cleaned]
+    : null;
 }
 
 /**
@@ -78,7 +76,7 @@ export function validateBankAccount(
     const bankFound = getBankByCode(bankCode);
     if (!bankFound) {
       return createFailure(
-        `Invalid CBSL bank code "${String(bankCode)}".`,
+        'Invalid CBSL bank code.',
         'BANK_CODE_INVALID'
       );
     }
@@ -89,7 +87,7 @@ export function validateBankAccount(
   if (branchCode !== undefined && branchCode !== null && branchCode !== '') {
     if (!isValidBranchCode(branchCode)) {
       return createFailure(
-        `Invalid branch code "${String(branchCode)}". Expected 3 digits.`,
+        'Invalid branch code. Expected 3 digits.',
         'BRANCH_CODE_INVALID'
       );
     }

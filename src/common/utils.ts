@@ -1,12 +1,12 @@
 import type { ValidationResult } from './types';
 
 /**
- * Strips whitespace, hyphens, and non-printable control characters from input string.
+ * Trims strings and removes zero-width spaces/BOMs. Accepts finite numbers
+ * explicitly; rejects other types without invoking user-defined coercion.
  */
 export function cleanString(input: unknown): string {
   if (typeof input !== 'string') {
-    if (input === null || input === undefined) return '';
-    return String(input).trim();
+    return typeof input === 'number' && Number.isFinite(input) ? String(input) : '';
   }
   return input.trim().replace(/[\u200B\uFEFF]/g, '');
 }
