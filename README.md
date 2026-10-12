@@ -540,6 +540,37 @@ but does not establish this day-of-year rule. Targeted DRP searches did not find
 an authoritative rule. Tests preserve compatibility; they do not certify that
 mapping as official. No leap-day policy change has been made without that evidence.
 
+## Performance benchmarks
+
+Run `npm run benchmark` after a production build. The dependency-free harness uses
+Node's high-resolution `performance.now()` clock, warms each operation, reports the
+median of repeated samples, exercises CJS and ESM, includes valid/invalid/oversized
+and mixed inputs, measures cold imports in isolated Node processes, and reports a
+post-GC retained-heap estimate. Set `BENCHMARK_BASELINE=/absolute/path/to/dist` to
+compare another build. `BENCHMARK_WARMUP`, `BENCHMARK_ITERATIONS`,
+`BENCHMARK_SAMPLES`, and `BENCHMARK_COLD_SAMPLES` control the workload.
+
+The 12 October 2026 comparison on Node 25.4.0 used 20,000 warm-up calls and repeated
+medians of 200,000 calls for focused hot-operation checks. Precomputed trilingual
+administrative indexes changed last-district lookup from 3.04 to 0.13 µs/op in CJS
+(23×) and 3.08 to 0.10 µs/op in ESM (32×). Missing-district lookup changed from
+3.41 to 0.08 µs/op in CJS (41×) and 3.29 to 0.05 µs/op in ESM (60×). Successful
+detailed NIC validation improved about 1.2–1.3× and phone validation about 1.1–1.2×
+after eliminating duplicate normalization on their success paths. These are local
+synthetic measurements, not production guarantees or release gates.
+
+Tree-shaking was rechecked with esbuild after adding the indexes. Importing only
+`isValidNic` produced a 969-byte gzip bundle from the root entry and 967 bytes from
+the `/nic` entry; the administrative index was absent from both. The unminified CJS
+root grew by 218 bytes and the administrative entry by 308 bytes relative to the
+saved pre-index build.
+
+The indexes contain only public administrative aliases. They do not cache supplied
+NICs, phone numbers, or other personal identifiers. All code paths preserve the
+existing detached-copy behavior of lookup results. The benchmark implementation uses
+[Node's performance clock](https://nodejs.org/api/perf_hooks.html) and
+[memory-usage API](https://nodejs.org/api/process.html#processmemoryusage).
+
 ## Contributing
 
 We welcome contributions from the community. Please read our [Contribution Guidelines](CONTRIBUTING.md) before submitting pull requests. Note that all pull requests must be made against the **`development`** branch.

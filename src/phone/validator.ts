@@ -44,19 +44,16 @@ export function isValidShortCode(code: unknown): boolean {
  * Detailed validation returning structured ValidationResult with error code and messages.
  */
 export function validatePhone(phone: unknown): ValidationResult<PhoneInfo> {
-  const cleaned = cleanString(phone);
-  if (!cleaned) {
+  const info = parsePhone(phone);
+  if (info) return createSuccess(info);
+
+  if (!cleanString(phone)) {
     return createFailure('Phone number is required.', 'PHONE_REQUIRED');
   }
 
-  const info = parsePhone(cleaned);
-  if (!info) {
-    return createFailure(
-      'Invalid Sri Lankan phone number. Must be a valid mobile (e.g. 077XXXXXXX) or landline (e.g. 011XXXXXXX).',
-      'PHONE_INVALID'
-    );
-  }
-
-  return createSuccess(info);
+  return createFailure(
+    'Invalid Sri Lankan phone number. Must be a valid mobile (e.g. 077XXXXXXX) or landline (e.g. 011XXXXXXX).',
+    'PHONE_INVALID'
+  );
 }
 

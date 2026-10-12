@@ -89,6 +89,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "benchmark": "npm run build && node --expose-gc scripts/benchmark.mjs",
     "prepublishOnly": "npm run build && npm run test"
   },
   "repository": {
