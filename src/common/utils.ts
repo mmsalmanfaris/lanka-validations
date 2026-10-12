@@ -70,7 +70,7 @@ export function createSuccess<T>(data: T): ValidationResult<T> {
  */
 export function createFailure<T = unknown>(
   error: string,
-  code?: string,
+  code = 'VALIDATION_FAILED',
   errors?: string[]
 ): ValidationResult<T> {
   return {

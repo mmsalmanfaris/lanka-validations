@@ -10,6 +10,19 @@ export function isValidBankCode(code: unknown): boolean {
   return getBankByCode(code) !== null;
 }
 
+/** Distinguishes malformed four-digit input from an unsupported CBSL code. */
+export function validateBankCode(code: unknown): ValidationResult<BankInfo> {
+  const normalized = typeof code === 'number' && Number.isInteger(code)
+    ? padZero(code, 4) : cleanString(code);
+  if (!/^[0-9]{4}$/.test(normalized)) {
+    return createFailure('Bank code must contain exactly four digits.', 'BANK_CODE_INVALID_FORMAT');
+  }
+  const bank = getBankByCode(normalized);
+  return bank
+    ? createSuccess(bank)
+    : createFailure('CBSL bank code is not in the bundled reference data.', 'BANK_CODE_UNSUPPORTED');
+}
+
 /**
  * Looks up bank details by CBSL 4-digit bank code.
  */

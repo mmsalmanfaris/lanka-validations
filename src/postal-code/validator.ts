@@ -66,7 +66,7 @@ export function validatePostalCode(code: unknown): ValidationResult<PostalCodeIn
   const info = lookupPostalCode(normalized);
   if (!info) {
     return createFailure(
-      `Postal code ${normalized} is not within any known Sri Lankan postal district range.`,
+      'Postal code is not within the bundled Sri Lankan postal district ranges.',
       'POSTAL_CODE_OUT_OF_RANGE'
     );
   }

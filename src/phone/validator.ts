@@ -1,6 +1,6 @@
 import { cleanString, createFailure, createSuccess } from '../common/utils';
 import type { ValidationResult } from '../common/types';
-import { parsePhone } from './parser';
+import { normalizePhoneNumber, parsePhone } from './parser';
 import type { PhoneInfo } from './types';
 
 /**
@@ -51,9 +51,11 @@ export function validatePhone(phone: unknown): ValidationResult<PhoneInfo> {
     return createFailure('Phone number is required.', 'PHONE_REQUIRED');
   }
 
-  return createFailure(
-    'Invalid Sri Lankan phone number. Must be a valid mobile (e.g. 077XXXXXXX) or landline (e.g. 011XXXXXXX).',
-    'PHONE_INVALID'
-  );
+  const cleaned = cleanString(phone);
+  const normalized = normalizePhoneNumber(cleaned);
+  if (/^0[0-9]{9}$/.test(normalized) || /^[0-9]{3,4}$/.test(cleaned)) {
+    return createFailure('Phone number prefix or short code is not in the bundled reference data.', 'PHONE_UNSUPPORTED');
+  }
+  return createFailure('Invalid Sri Lankan phone number format.', 'PHONE_INVALID');
 }
 
