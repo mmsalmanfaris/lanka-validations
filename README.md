@@ -78,7 +78,6 @@ Full API reference: **https://mmsalmanfaris.github.io/lanka-validations/**
 - [Which Function Do I Use?](#which-function-do-i-use)
 - [Key Capabilities](#key-capabilities)
 - [What Validation Means](#what-validation-means)
-- [Data Sources](#data-sources)
 - [Installation](#installation)
 - [Import Styles](#import-styles)
 - [Quick Guide by Validator](#quick-guide-by-validator)
@@ -98,6 +97,7 @@ Full API reference: **https://mmsalmanfaris.github.io/lanka-validations/**
 - [Cross-Field Verification (NIC Matching)](#cross-field-verification-nic-matching)
 - [Using with Zod, React Hook Form, and Express](#using-with-zod-react-hook-form-and-express)
 - [API Reference](#api-reference)
+- [Data Sources](#data-sources)
 - [Frequently Asked Questions](#frequently-asked-questions)
 - [Contributing](#contributing)
 - [Author](#author)
@@ -128,25 +128,6 @@ These validators check that a value is **well-formed** and consistent with the r
 - NIC check digits are not verified, because DRP has not published the algorithm.
 
 For KYC or payments, treat these checks as input hygiene and confirm identity, accounts, and registrations with the issuing authority or a verification provider.
-
----
-
-## Data Sources
-
-Reference tables are bundled at build time and do not update on their own. `getReferenceDataMetadata()` returns this information at runtime, including the limitations of each table.
-
-| Table | Source | As of | Coverage |
-| --- | --- | --- | --- |
-| Provinces, districts | [Department of Census and Statistics: Census of Population and Housing 2024 preliminary report](https://www.statistics.gov.lk/Resource/en/Population/CPH_2024/Preliminary_Report.pdf) | 2026-10-12 | All 9 provinces and 25 districts, in English, Sinhala, and Tamil |
-| CBSL bank codes | [Central Bank of Sri Lanka: ITRS Bank Reference Manual](https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/about/ITRS_bank_reference_manual_e.pdf) | 2026-10-12 | Institution codes included by this package; verify routing-critical use against current CBSL publications |
-| Postal codes | [Sri Lanka Post: Post Code Book (2022)](https://www.slpost.gov.lk/wp-content/uploads/2022/11/POST-CODE-BOOK-.pdf) | 2026-10-12 | Two-digit prefixes mapped to districts, plus selected major cities; not every delivery office |
-| Mobile prefixes, area codes, short codes | [TRCSL: National Numbering Plan](https://www.trc.gov.lk/pages_e.php?id=121) | 2026-10-12 | Known prefixes and a curated subset of short codes; an unrecognised prefix is not proof a number is unassigned |
-| Driving licence classes | [Department of Motor Traffic: Driving licence vehicle classes](https://dmt.gov.lk/index.php?Itemid=163&id=46&lang=ta&option=com_content&view=article) | 2026-10-12 | DMT classes, descriptions, and minimum ages used by this package |
-| Vehicle plate provinces | [Department of Motor Traffic: Vehicle Information Service](https://eservices.motortraffic.gov.lk/VehicleInfo/home) | 2026-10-12 | Nine province prefixes; historical plate formats are best-effort |
-| NIC format | Public DRP guidance; no official specification found | — | Old (9 digits + V/X) and new (12 digits) formats. Day-of-year uses the 366-day convention; day 060 in a common year maps to 28 February pending DRP confirmation |
-| TIN / VAT | [IRD: Taxpayer registration guidelines](https://www.ird.gov.lk/en/Shared%20Documents/TPR_Guidelines_1.1_E.pdf) | 2026-10-14 | Digit-pattern checks only; an NIC is not accepted as a TIN |
-
-Found an outdated entry? Please [open an issue](https://github.com/mmsalmanfaris/lanka-validations/issues) with a link to the current official source.
 
 ---
 
@@ -714,6 +695,25 @@ NICs, phone numbers, or other personal identifiers. All code paths preserve the
 existing detached-copy behavior of lookup results. The benchmark implementation uses
 [Node's performance clock](https://nodejs.org/api/perf_hooks.html) and
 [memory-usage API](https://nodejs.org/api/process.html#processmemoryusage).
+
+## Data Sources
+
+Reference tables are bundled at build time and do not update on their own. `getReferenceDataMetadata()` returns this information at runtime, including the limitations of each table.
+
+| Table | Source | As of | Coverage |
+| --- | --- | --- | --- |
+| Provinces, districts | [Department of Census and Statistics: Census of Population and Housing 2024 preliminary report](https://www.statistics.gov.lk/Resource/en/Population/CPH_2024/Preliminary_Report.pdf) | 2026-10-12 | All 9 provinces and 25 districts, in English, Sinhala, and Tamil |
+| CBSL bank codes | [Central Bank of Sri Lanka: ITRS Bank Reference Manual](https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/about/ITRS_bank_reference_manual_e.pdf) | 2026-10-12 | Institution codes included by this package; verify routing-critical use against current CBSL publications |
+| Postal codes | [Sri Lanka Post: Post Code Book (2022)](https://www.slpost.gov.lk/wp-content/uploads/2022/11/POST-CODE-BOOK-.pdf) | 2026-10-12 | Two-digit prefixes mapped to districts, plus selected major cities; not every delivery office |
+| Mobile prefixes, area codes, short codes | [TRCSL: National Numbering Plan](https://www.trc.gov.lk/pages_e.php?id=121) | 2026-10-12 | Known prefixes and a curated subset of short codes; an unrecognised prefix is not proof a number is unassigned |
+| Driving licence classes | [Department of Motor Traffic: Driving licence vehicle classes](https://dmt.gov.lk/index.php?Itemid=163&id=46&lang=ta&option=com_content&view=article) | 2026-10-12 | DMT classes, descriptions, and minimum ages used by this package |
+| Vehicle plate provinces | [Department of Motor Traffic: Vehicle Information Service](https://eservices.motortraffic.gov.lk/VehicleInfo/home) | 2026-10-12 | Nine province prefixes; historical plate formats are best-effort |
+| NIC format | Public DRP guidance; no official specification found | — | Old (9 digits + V/X) and new (12 digits) formats. Day-of-year uses the 366-day convention; day 060 in a common year maps to 28 February pending DRP confirmation |
+| TIN / VAT | [IRD: Taxpayer registration guidelines](https://www.ird.gov.lk/en/Shared%20Documents/TPR_Guidelines_1.1_E.pdf) | 2026-10-14 | Digit-pattern checks only; an NIC is not accepted as a TIN |
+
+Found an outdated entry? Please [open an issue](https://github.com/mmsalmanfaris/lanka-validations/issues) with a link to the current official source.
+
+---
 
 ## Frequently Asked Questions
 
