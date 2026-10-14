@@ -10,6 +10,15 @@ import type { VehiclePlateInfo } from './types';
  * - Modern Numeric Series: 'WP 123-4567', '300-1234'
  * - 'Sri' Series: '14 Sri 1234', '14 ශ්‍රී 1234'
  * - Vintage Series: 'EY 1234', 'Z 1234'
+ *
+ * @param rawPlate - Vehicle plate in any common spacing. Strings and finite numbers are accepted; other types return a failure without throwing.
+ * @returns Era, province, series, number, and a formatted version, or `null` if invalid.
+ *
+ * @example
+ * ```ts
+ * parseVehiclePlate('WP CAB-1234')?.provinceName; // 'Western Province'
+ * parseVehiclePlate('14 Sri 1234')?.era; // 'sri_series'
+ * ```
  */
 export function parseVehiclePlate(rawPlate: unknown): VehiclePlateInfo | null {
   const cleaned = cleanString(rawPlate).toUpperCase().replace(/\s+/g, ' ');

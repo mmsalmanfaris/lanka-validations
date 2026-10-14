@@ -7,6 +7,15 @@ const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
  * Parses raw days of year (001 - 866) into month (1-12) and day of month (1-31).
  * Uses the library's legacy 366-day table. The non-leap day-60 mapping
  * remains a compatibility rule pending authoritative DRP confirmation.
+ *
+ * @param year - Four-digit birth year.
+ * @param dayOfYear - Day of year from the NIC (1 to 366), after removing the 500 offset for women.
+ * @returns `{ month, day }`, or `null` if the day is out of range.
+ *
+ * @example
+ * ```ts
+ * parseNicDayOfYear(1992, 123); // { month: 5, day: 2 }
+ * ```
  */
 export function parseNicDayOfYear(
   year: number,
@@ -41,6 +50,18 @@ export function parseNicDayOfYear(
 /**
  * Parses a Sri Lankan National Identity Card number.
  * Returns structured NicInfo if valid, or null if invalid.
+ *
+ * @param rawNic - NIC number, old or new format. Strings and finite numbers are accepted; other types return a failure without throwing.
+ * @param options - Optional `{ referenceDate }` used for age and future-date checks. Defaults to today.
+ * @returns Decoded details (date of birth, age, gender, both formats), or `null` if the NIC is invalid.
+ *
+ * @example
+ * ```ts
+ * parseNic('921234567V')?.dobString; // '1992-05-02'
+ * parseNic('921234567V')?.gender; // 'male'
+ * parseNic('921234567V')?.newNic; // '199212304567'
+ * parseNic('invalid'); // null
+ * ```
  */
 export function parseNic(rawNic: unknown, options?: NicOptions): NicInfo | null {
   const cleaned = cleanString(rawNic).toUpperCase();

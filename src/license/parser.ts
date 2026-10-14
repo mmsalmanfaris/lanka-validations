@@ -7,6 +7,14 @@ import type { DrivingLicenseInfo } from './types';
  * Supports:
  * - Legacy DMT format: B followed by 7 digits (e.g. B1234567)
  * - Modern Smart Card format: DMT B-number or NIC-based license
+ *
+ * @param rawLicense - Driving licence number. Strings and finite numbers are accepted; other types return a failure without throwing.
+ * @returns The detected format and number, or `null` if invalid.
+ *
+ * @example
+ * ```ts
+ * parseDrivingLicense('B1234567')?.format; // 'smart_card_b'
+ * ```
  */
 export function parseDrivingLicense(rawLicense: unknown): DrivingLicenseInfo | null {
   const cleaned = cleanString(rawLicense).toUpperCase().replace(/[\s-]/g, '');

@@ -18,6 +18,16 @@ for (const district of DISTRICTS) {
 
 /**
  * Validates whether the given string is a valid Sri Lankan province name, Sinhala/Tamil name, or province code (e.g. 'WP', 'Western', 'බස්නාහිර').
+ *
+ * @param p - Province code or name in English, Sinhala, or Tamil.
+ * @returns `true` if the province is recognised.
+ *
+ * @example
+ * ```ts
+ * isValidProvince('Western'); // true
+ * isValidProvince('WP'); // true
+ * isValidProvince('Unknown'); // false
+ * ```
  */
 export function isValidProvince(p: unknown): boolean {
   const cleaned = cleanString(p).toLowerCase();
@@ -26,6 +36,15 @@ export function isValidProvince(p: unknown): boolean {
 
 /**
  * Validates whether the given string is a valid Sri Lankan district name, Sinhala name, or Tamil name (e.g. 'Colombo', 'කොළඹ', 'கொழும்பு').
+ *
+ * @param d - District name in English, Sinhala, or Tamil.
+ * @returns `true` if the district is recognised.
+ *
+ * @example
+ * ```ts
+ * isValidDistrict('Jaffna'); // true
+ * isValidDistrict('Atlantis'); // false
+ * ```
  */
 export function isValidDistrict(d: unknown): boolean {
   const cleaned = cleanString(d).toLowerCase();
@@ -34,6 +53,15 @@ export function isValidDistrict(d: unknown): boolean {
 
 /**
  * Retrieves province details by code or trilingual name.
+ *
+ * @param p - Province code or name in English, Sinhala, or Tamil.
+ * @returns A copy of the province details, or `null` if unknown.
+ *
+ * @example
+ * ```ts
+ * getProvinceInfo('Western')?.nameSi; // 'බස්නාහිර'
+ * getProvinceInfo('WP')?.districts.length; // 3
+ * ```
  */
 export function getProvinceInfo(p: unknown): ProvinceInfo | null {
   const cleaned = cleanString(p).toLowerCase();
@@ -45,6 +73,15 @@ export function getProvinceInfo(p: unknown): ProvinceInfo | null {
 
 /**
  * Retrieves district details by name or Sinhala/Tamil name.
+ *
+ * @param d - District name in English, Sinhala, or Tamil.
+ * @returns A copy of the district details, or `null` if unknown.
+ *
+ * @example
+ * ```ts
+ * getDistrictInfo('Kandy')?.provinceName; // 'Central'
+ * getDistrictInfo('Kandy')?.nameTa; // 'கண்டி'
+ * ```
  */
 export function getDistrictInfo(d: unknown): DistrictInfo | null {
   const cleaned = cleanString(d).toLowerCase();
@@ -56,6 +93,13 @@ export function getDistrictInfo(d: unknown): DistrictInfo | null {
 
 /**
  * Returns all 9 Sri Lankan provinces with details.
+ *
+ * @returns Copies of all 9 provinces.
+ *
+ * @example
+ * ```ts
+ * getProvinces().length; // 9
+ * ```
  */
 export function getProvinces(): ProvinceInfo[] {
   return PROVINCES.map((prov) => ({ ...prov, districts: [...prov.districts] }));
@@ -63,6 +107,13 @@ export function getProvinces(): ProvinceInfo[] {
 
 /**
  * Returns all 25 Sri Lankan districts with details.
+ *
+ * @returns Copies of all 25 districts.
+ *
+ * @example
+ * ```ts
+ * getDistricts().length; // 25
+ * ```
  */
 export function getDistricts(): DistrictInfo[] {
   return DISTRICTS.map((dist) => ({ ...dist }));

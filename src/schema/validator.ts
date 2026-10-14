@@ -73,7 +73,19 @@ export class SchemaValidator<
     }
   }
 
-  /** Adds rules to a field, after any it already has. Returns the validator for chaining. */
+  /**
+   * Adds rules to a field, after any it already has. Returns the validator for chaining.
+   *
+   * @param name - Field name in the form object.
+   * @param rules - Rules to append, checked in order.
+   * @returns The same validator.
+   *
+   * @example
+   * ```ts
+   * const form = new SchemaValidator().field('nic', rules.required(), rules.nic());
+   * form.validate({}).errorCodes; // { nic: 'REQUIRED' }
+   * ```
+   */
   field(name: keyof TInput, ...rules: ValidatorRule[]): this {
     const existing = this.rules.get(name) ?? [];
     this.rules.set(name, [...existing, ...rules]);
@@ -83,6 +95,10 @@ export class SchemaValidator<
   /**
    * Checks every field. Each field stops at its first failing rule. Non-object input, arrays,
    * and class instances fail with code `SCHEMA_INVALID_ROOT` instead of throwing.
+   *
+   * @param data - Form data to check, usually a parsed request body.
+   * @returns `{ isValid: true, data }` with every field's parsed value, or `{ isValid: false, data }` with
+   * only the fields that passed. Both include `errors` (messages), `errorCodes`, and `errorList`, keyed by field.
    */
   validate(data: unknown): SchemaValidationResult<TOutput> {
     const errors = Object.create(null) as Record<string, string>;
@@ -146,7 +162,24 @@ export class SchemaValidator<
   }
 }
 
-/** Creates a {@link SchemaValidator} from a map of field names to rules. The parsed output type is inferred from the rules. */
+/**
+ * Creates a {@link SchemaValidator} from a map of field names to rules. The parsed output type is inferred from the rules.
+ *
+ * @param schemaMap - Field names mapped to one rule or an ordered list of rules. Use the built-in `rules` or your own functions.
+ * @returns A validator whose `validate(data)` returns typed, parsed data or per-field errors.
+ *
+ * @example
+ * ```ts
+ * const form = createSchemaValidator({ nic: rules.nic(), phone: rules.optional(rules.mobile()) });
+ *
+ * const ok = form.validate({ nic: '921234567V', phone: '0771234567' });
+ * ok.isValid; // true
+ * if (ok.isValid) ok.data.nic.dobString; // '1992-05-02'
+ *
+ * form.validate({ nic: 'bad' }).errorCodes; // { nic: 'NIC_INVALID_FORMAT' }
+ * form.validate(null).errorCodes; // { $root: 'SCHEMA_INVALID_ROOT' }
+ * ```
+ */
 export function createSchemaValidator<const S extends SchemaDefinition>(
   schemaMap: S,
 ): SchemaValidator<Record<keyof S, unknown>, InferSchemaOutput<S>>;

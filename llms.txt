@@ -1,0 +1,30 @@
+# lanka-validations
+
+> Zero-dependency TypeScript/JavaScript library (npm: `lanka-validations`) for validating, parsing, and formatting Sri Lankan data: NIC numbers (old 9-digit + V/X and new 12-digit), phone numbers, passports, driving licences, vehicle plates, LKR currency (including amounts in words in English, Sinhala, and Tamil), postal codes, CBSL bank codes, TIN/VAT numbers, dates of birth, gender, provinces, and districts. Runs in Node.js 20+, browsers, Deno, and Bun; ships ESM, CommonJS, and TypeScript types. MIT licensed.
+
+Key facts for code generation:
+
+- Install with `npm install lanka-validations`. Import from subpaths to keep bundles small: `lanka-validations/nic`, `/phone`, `/passport`, `/license`, `/vehicle`, `/currency`, `/dob`, `/gender`, `/postal-code`, `/bank`, `/tax`, `/administrative`, `/schema`, `/privacy`, `/i18n`, `/reference-data`. Everything is also exported from the root.
+- `isValidX(value)` returns a boolean. `validateX(value)` returns `{ isValid: true, data }` or `{ isValid: false, error, errors, code }`; narrow with `if (result.isValid)`. `parseX(value)` returns the parsed object or `null`.
+- All validators accept `unknown` and never throw. Strings over 1,024 characters are rejected.
+- Common calls: `isValidNic('921234567V')` → `true`; `parseNic('921234567V')?.dobString` → `'1992-05-02'`; `convertOldToNewNic('921234567V')` → `'199212304567'`; `isValidMobile('0771234567')` → `true`; `formatPhone('0771234567', 'e164')` → `'+94771234567'`; `formatLKR(1500000, { lakhScale: true })` → `'Rs. 15,00,000.00'`; `lkrToWords(1250, { language: 'si' })`; `lookupPostalCode('20000')?.district` → `'Kandy'`; `getBankByCode('7010')?.name` → `'Bank of Ceylon'`.
+- Forms: `createSchemaValidator({ nic: rules.nic(), phone: rules.mobile() }).validate(data)`; parsed output types are inferred.
+- Validation checks format only. It does not prove an NIC, phone number, account, or TIN exists or belongs to anyone. NIC check digits are not verified.
+- `isValidTIN` does not accept NIC numbers (since 2.0.0). Version 2.x requires Node.js 20+.
+
+## Docs
+
+- [README](https://raw.githubusercontent.com/mmsalmanfaris/lanka-validations/main/README.md): usage for every validator, a task-to-function table, integration with Zod, React Hook Form, and Express, and an FAQ
+- [API reference](https://mmsalmanfaris.github.io/lanka-validations/): generated from TSDoc for every export
+- [Full documentation in one file](https://mmsalmanfaris.github.io/lanka-validations/llms-full.txt): README and changelog combined
+
+## Reference
+
+- [Changelog](https://raw.githubusercontent.com/mmsalmanfaris/lanka-validations/main/CHANGELOG.md): breaking changes and migration from 1.x to 2.x
+- [Data sources](https://github.com/mmsalmanfaris/lanka-validations#data-sources): official source, as-of date, and limits for each reference table
+- [npm package](https://www.npmjs.com/package/lanka-validations)
+
+## Optional
+
+- [Security policy](https://raw.githubusercontent.com/mmsalmanfaris/lanka-validations/main/SECURITY.md)
+- [Contributing](https://raw.githubusercontent.com/mmsalmanfaris/lanka-validations/main/CONTRIBUTING.md)

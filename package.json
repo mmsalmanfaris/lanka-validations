@@ -1,6 +1,6 @@
 {
   "name": "lanka-validations",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "High-performance, zero-dependency Sri Lankan data validation library for TypeScript and JavaScript. Validate and parse Sri Lankan National Identity Card (NIC), phone numbers, passport, driving license, vehicle number plates, LKR currency, date of birth (DOB), gender, postal codes, CBSL bank codes, and TIN.",
   "type": "commonjs",
   "main": "./dist/index.js",
@@ -233,7 +233,8 @@
   },
   "files": [
     "dist",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "llms.txt"
   ],
   "sideEffects": false,
   "engines": {
@@ -250,7 +251,7 @@
     "test:coverage": "vitest run --coverage",
     "lint:package": "npm run build && publint --strict && attw --pack .",
     "size": "npm run build && size-limit",
-    "docs": "typedoc",
+    "docs": "typedoc && node scripts/build-llms.mjs",
     "benchmark": "npm run build && node --expose-gc scripts/benchmark.mjs",
     "check:package": "npm run build && node scripts/check-package.mjs",
     "prepublishOnly": "npm run typecheck && npm run lint && npm run test:coverage && npm run lint:package && node scripts/check-package.mjs"
@@ -262,7 +263,7 @@
   "bugs": {
     "url": "https://github.com/mmsalmanfaris/lanka-validations/issues"
   },
-  "homepage": "https://github.com/mmsalmanfaris/lanka-validations#readme",
+  "homepage": "https://mmsalmanfaris.github.io/lanka-validations/",
   "keywords": [
     "sri-lanka",
     "validation",
@@ -293,7 +294,13 @@
     "sinhala",
     "tamil",
     "typescript",
-    "zero-dependency"
+    "zero-dependency",
+    "nic-to-dob",
+    "nic-converter",
+    "sri-lanka-mobile-number",
+    "lkr-to-words",
+    "react-hook-form",
+    "zod"
   ],
   "author": "M.M. Salman Faris <mmsalmanfaris@outlook.com>",
   "license": "MIT",

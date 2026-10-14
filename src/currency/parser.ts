@@ -8,6 +8,16 @@ export const MAX_LKR_AMOUNT = Number.MAX_SAFE_INTEGER / 100;
  * One optional currency prefix OR suffix is allowed, with a leading minus
  * or enclosing parentheses for negatives. Returns an approximate JS number;
  * fractional digits are preserved without rounding, subject to Number precision.
+ *
+ * @param input - Amount as a number or text. Accepts `Rs.`/`LKR`/`රු.`/`ரூ.` before or after, Western or lakh grouping, and `-` or parentheses for negatives.
+ * @returns The amount as a JavaScript number, or `null` if malformed. Use `parseLKRMinorUnits` for exact money.
+ *
+ * @example
+ * ```ts
+ * parseLKR('Rs. 12,34,567.50'); // 1234567.5
+ * parseLKR('(1,500)'); // -1500
+ * parseLKR('1,2,3'); // null
+ * ```
  */
 export function parseLKR(input: unknown): number | null {
   if (typeof input === 'number') {

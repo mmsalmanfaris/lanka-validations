@@ -5,6 +5,16 @@ import type { PostalCodeInfo } from './types';
 
 /**
  * Normalizes a postal code into a 5-digit string (e.g. 100 -> '00100').
+ *
+ * @param input - Postal code as text or an integer. Shorter codes are padded to five digits.
+ * @returns The five-digit code, or `null` if the input is not one to five digits.
+ *
+ * @example
+ * ```ts
+ * normalizePostalCode(100); // '00100'
+ * normalizePostalCode('20000'); // '20000'
+ * normalizePostalCode('2000A'); // null
+ * ```
  */
 export function normalizePostalCode(input: unknown): string | null {
   if (typeof input === 'number') {
@@ -25,6 +35,15 @@ export function normalizePostalCode(input: unknown): string | null {
 /**
  * Looks up district, province, and primary city for a Sri Lankan 5-digit postal code.
  * Returns PostalCodeInfo or null if not a recognized postal code range.
+ *
+ * @param code - Postal code to look up.
+ * @returns District, province, and (for selected cities) the city, or `null` if the prefix is unknown.
+ *
+ * @example
+ * ```ts
+ * lookupPostalCode('20000')?.district; // 'Kandy'
+ * lookupPostalCode('00100')?.primaryCity; // 'Colombo 01 (Fort)'
+ * ```
  */
 export function lookupPostalCode(code: unknown): PostalCodeInfo | null {
   const normalized = normalizePostalCode(code);
@@ -46,6 +65,15 @@ export function lookupPostalCode(code: unknown): PostalCodeInfo | null {
 
 /**
  * Validates whether the given code is a valid 5-digit Sri Lankan postal code.
+ *
+ * @param code - Postal code to check.
+ * @returns `true` if the code is five digits with a known district prefix. Exact post-office assignment is not checked.
+ *
+ * @example
+ * ```ts
+ * isValidPostalCode('00100'); // true
+ * isValidPostalCode('abc20000'); // false
+ * ```
  */
 export function isValidPostalCode(code: unknown): boolean {
   return lookupPostalCode(code) !== null;
@@ -53,6 +81,14 @@ export function isValidPostalCode(code: unknown): boolean {
 
 /**
  * Validates a Sri Lankan postal code returning detailed ValidationResult.
+ *
+ * @param code - Postal code to check.
+ * @returns `{ isValid: true, data }` with `PostalCodeInfo`, or `{ isValid: false, error, errors, code }`.
+ *
+ * @example
+ * ```ts
+ * validatePostalCode('20000').isValid; // true
+ * ```
  */
 export function validatePostalCode(code: unknown): ValidationResult<PostalCodeInfo> {
   const normalized = normalizePostalCode(code);

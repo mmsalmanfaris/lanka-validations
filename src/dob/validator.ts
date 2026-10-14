@@ -20,6 +20,16 @@ function validOptions(options?: DobOptions): boolean {
 /**
  * Parses various date formats into a Date object.
  * Supports: Date object, 'YYYY-MM-DD', 'YYYY/MM/DD', 'DD-MM-YYYY', 'DD/MM/YYYY'.
+ *
+ * @param input - Date as `YYYY-MM-DD`, `YYYY/MM/DD`, `DD-MM-YYYY`, `DD/MM/YYYY`, or a `Date`.
+ * @returns A `Date` at UTC midnight, or `null` if the format is not supported or the date does not exist.
+ *
+ * @example
+ * ```ts
+ * parseDob('15/01/2000')?.toISOString(); // '2000-01-15T00:00:00.000Z'
+ * parseDob('2023-02-29'); // null
+ * parseDob('March 5 2000'); // null
+ * ```
  */
 export function parseDob(input: unknown): Date | null {
   if (input instanceof Date) {
@@ -51,6 +61,15 @@ export function parseDob(input: unknown): Date | null {
 
 /**
  * Calculates current age in full completed years.
+ *
+ * @param dobInput - Date of birth in any format `parseDob` accepts.
+ * @param referenceDate - Date to calculate the age on. Defaults to today.
+ * @returns Age in full years on the UTC calendar date, or `null` if the input is invalid.
+ *
+ * @example
+ * ```ts
+ * calculateAge('2000-01-15', new Date('2026-01-01')); // 25
+ * ```
  */
 export function calculateAge(dobInput: unknown, referenceDate?: Date): number | null {
   if (!validOptions({ referenceDate })) return null;
@@ -70,6 +89,16 @@ export function calculateAge(dobInput: unknown, referenceDate?: Date): number | 
 
 /**
  * Validates whether an input is a valid Date of Birth.
+ *
+ * @param input - Date of birth in any format `parseDob` accepts.
+ * @param options - Optional `{ minAge, maxAge, referenceDate }`.
+ * @returns `true` if the date exists, is not in the future, and satisfies the age limits.
+ *
+ * @example
+ * ```ts
+ * isValidDob('2000-01-15', { minAge: 18, referenceDate: new Date('2026-01-01') }); // true
+ * isValidDob('2015-01-01', { minAge: 18, referenceDate: new Date('2026-01-01') }); // false
+ * ```
  */
 export function isValidDob(input: unknown, options?: DobOptions): boolean {
   if (!validOptions(options)) return false;
@@ -102,6 +131,16 @@ export function isValidDob(input: unknown, options?: DobOptions): boolean {
 
 /**
  * Cross-validates whether the entered DOB matches the date encoded in the user's Sri Lankan NIC.
+ *
+ * @param dobInput - Date of birth from the form.
+ * @param nicInput - NIC number from the same form.
+ * @returns `true` if both are valid and the date matches the one encoded in the NIC.
+ *
+ * @example
+ * ```ts
+ * matchesNicDob('1992-05-02', '921234567V'); // true
+ * matchesNicDob('1995-01-01', '921234567V'); // false
+ * ```
  */
 export function matchesNicDob(dobInput: unknown, nicInput: unknown): boolean {
   const dob = parseDob(dobInput);
@@ -118,6 +157,16 @@ export function matchesNicDob(dobInput: unknown, nicInput: unknown): boolean {
 
 /**
  * Validates DOB returning structured ValidationResult.
+ *
+ * @param input - Date of birth in any format `parseDob` accepts.
+ * @param options - Optional `{ minAge, maxAge, referenceDate }`.
+ * @returns `{ isValid: true, data }` with `{ dob, age, isoDate }`, or `{ isValid: false, error, errors, code }`.
+ *
+ * @example
+ * ```ts
+ * validateDob('2000-01-15', { referenceDate: new Date('2026-01-01') }).isValid; // true
+ * validateDob('2030-01-01').code; // 'DOB_FUTURE'
+ * ```
  */
 export function validateDob(
   input: unknown,

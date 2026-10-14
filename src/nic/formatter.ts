@@ -7,10 +7,17 @@ export type NicFormatStyle = NicFormat | 'spaced-old' | 'spaced-new';
 /**
  * Formats a Sri Lankan NIC cleanly.
  *
- * Examples:
- * - formatNic('921234567v') -> '921234567V'
- * - formatNic('921234567v', 'spaced-old') -> '92123 4567 V'
- * - formatNic('199212304567', 'spaced-new') -> '1992 1230 4567'
+ * @param nic - NIC number, old or new format.
+ * @param style - Output style: `'old'`, `'new'`, `'spaced-old'`, or `'spaced-new'`. Defaults to the input's own format.
+ * @param options - Optional `{ referenceDate }` used for age and future-date checks. Defaults to today.
+ * @returns The formatted NIC, or `null` if the input is invalid.
+ *
+ * @example
+ * ```ts
+ * formatNic('921234567v'); // '921234567V'
+ * formatNic('921234567V', 'new'); // '199212304567'
+ * formatNic('199212304567', 'spaced-new'); // '1992 123 0456 7'
+ * ```
  */
 export function formatNic(
   nic: unknown,
