@@ -9,8 +9,8 @@ export type NicFormatStyle = NicFormat | 'spaced-old' | 'spaced-new';
  *
  * Examples:
  * - formatNic('921234567v') -> '921234567V'
- * - formatNic('921234567v', 'spaced-old') -> '92123 4567 V'
- * - formatNic('199212304567', 'spaced-new') -> '1992 1230 4567'
+ * - formatNic('921234567v', 'spaced-old') -> '92123 456 7V'
+ * - formatNic('199212304567', 'spaced-new') -> '1992 123 0456 7'
  */
 export function formatNic(
   nic: unknown,
