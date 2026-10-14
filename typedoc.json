@@ -2,7 +2,6 @@
   "$schema": "https://typedoc.org/schema.json",
   "name": "lanka-validations",
   "entryPoints": [
-    "src/index.ts",
     "src/nic/index.ts",
     "src/phone/index.ts",
     "src/passport/index.ts",
@@ -18,7 +17,8 @@
     "src/schema/index.ts",
     "src/privacy/index.ts",
     "src/i18n/index.ts",
-    "src/reference-data/index.ts"
+    "src/reference-data/index.ts",
+    "src/index.ts"
   ],
   "out": "api-docs",
   "readme": "README.md",
@@ -33,5 +33,56 @@
   },
   "requiredToBeDocumented": ["Function", "Class", "Interface", "TypeAlias", "Variable"],
   "intentionallyNotExported": ["RuleData", "SchemaResultBase"],
-  "treatWarningsAsErrors": true
+  "treatWarningsAsErrors": true,
+  "navigationLinks": {
+    "GitHub": "https://github.com/mmsalmanfaris/lanka-validations",
+    "npm": "https://www.npmjs.com/package/lanka-validations",
+    "Changelog": "https://mmsalmanfaris.github.io/lanka-validations/documents/CHANGELOG.html"
+  },
+  "sidebarLinks": {
+    "Report an issue": "https://github.com/mmsalmanfaris/lanka-validations/issues/new/choose"
+  },
+  "projectDocuments": ["CHANGELOG.md"],
+  "searchInComments": true,
+  "searchInDocuments": true,
+  "groupOrder": ["Functions", "Classes", "Interfaces", "Type Aliases", "Variables", "*"],
+  "navigation": {
+    "includeCategories": false,
+    "includeGroups": false,
+    "includeFolders": true,
+    "compactFolders": true,
+    "excludeReferences": true
+  },
+  "headings": {
+    "readme": false,
+    "document": true
+  },
+  "customCss": "./typedoc.css",
+  "sort": ["kind", "alphabetical"],
+  "kindSortOrder": [
+    "Document",
+    "Project",
+    "Module",
+    "Namespace",
+    "Function",
+    "Class",
+    "Interface",
+    "TypeAlias",
+    "Variable",
+    "Enum",
+    "EnumMember",
+    "Constructor",
+    "Property",
+    "Method",
+    "CallSignature",
+    "IndexSignature",
+    "ConstructorSignature",
+    "Accessor",
+    "GetSignature",
+    "SetSignature",
+    "TypeLiteral",
+    "TypeParameter",
+    "Parameter",
+    "Reference"
+  ]
 }
