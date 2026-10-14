@@ -5,18 +5,77 @@ High-performance, zero-dependency Sri Lankan data validation and parsing library
 
 [![npm version](https://img.shields.io/npm/v/lanka-validations.svg)](https://www.npmjs.com/package/lanka-validations)
 [![CI](https://github.com/mmsalmanfaris/lanka-validations/actions/workflows/ci.yml/badge.svg)](https://github.com/mmsalmanfaris/lanka-validations/actions/workflows/ci.yml)
-[![Bundle size](https://img.shields.io/bundlejs/size/lanka-validations)](https://bundlejs.com/?q=lanka-validations)
+[![NIC module size](https://deno.bundlejs.com/badge?q=lanka-validations/nic)](https://bundlejs.com/?q=lanka-validations/nic)
 [![Types](https://img.shields.io/npm/types/lanka-validations.svg)](https://www.npmjs.com/package/lanka-validations)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/mmsalmanfaris/lanka-validations/badge)](https://scorecard.dev/viewer/?uri=github.com/mmsalmanfaris/lanka-validations)
+[![Socket](https://badge.socket.dev/npm/package/lanka-validations)](https://socket.dev/npm/package/lanka-validations)
 [![License: MIT](https://img.shields.io/npm/l/lanka-validations.svg)](LICENSE)
 
-`lanka-validations` is an open-source validation library tailored specifically for Sri Lankan business systems, KYC user onboarding, financial apps, mobile applications, and web forms.
+**lanka-validations** is a zero-dependency TypeScript and JavaScript library for validating, parsing, and formatting Sri Lankan data: NIC numbers (old and new), phone numbers, passports, driving licences, vehicle plates, LKR amounts, postal codes, CBSL bank codes, TIN/VAT numbers, dates of birth, and gender. It runs in Node.js 20+, browsers, Deno, and Bun, and ships ESM, CommonJS, and TypeScript types.
+
+Use it for KYC onboarding, sign-up and checkout forms, banking and payroll systems, and anywhere you accept Sri Lankan identifiers.
+
+## Quick Start
+
+```bash
+npm install lanka-validations
+```
+
+```typescript
+import { isValidNic, validateNic, convertOldToNewNic } from 'lanka-validations/nic';
+import { isValidMobile, formatPhone } from 'lanka-validations/phone';
+
+isValidNic('921234567V'); // true
+convertOldToNewNic('921234567V'); // '199212304567'
+
+const result = validateNic('921234567V');
+if (result.isValid) {
+  result.data.dobString; // '1992-05-02'
+  result.data.gender; // 'male'
+} else {
+  result.code; // stable error code, e.g. 'NIC_INVALID_FORMAT'
+}
+
+isValidMobile('077 123 4567'); // true
+formatPhone('0771234567', 'e164'); // '+94771234567'
+```
+
+Every `isValidX` returns a boolean. Every `validateX` returns `{ isValid: true, data }` or `{ isValid: false, error, code }`, and never throws, whatever the input.
+
+## Which Function Do I Use?
+
+| Task | Function | Import from |
+| --- | --- | --- |
+| Check a Sri Lankan NIC number | `isValidNic(nic)` | `lanka-validations/nic` |
+| Get date of birth, age, and gender from an NIC | `parseNic(nic)` or `validateNic(nic)` | `lanka-validations/nic` |
+| Convert an old NIC (9 digits + V/X) to the new 12-digit format | `convertOldToNewNic(nic)` | `lanka-validations/nic` |
+| Check that a form's date of birth or gender matches its NIC | `matchesNicDob(dob, nic)`, `matchesNicGender(gender, nic)` | `lanka-validations` |
+| Check a Sri Lankan mobile number | `isValidMobile(phone)` | `lanka-validations/phone` |
+| Convert a phone number to +94 (E.164) format | `formatPhone(phone, 'e164')` | `lanka-validations/phone` |
+| Check a passport or driving licence number | `isValidPassport(value)`, `isValidDrivingLicense(value)` | `lanka-validations/passport`, `lanka-validations/license` |
+| Check a vehicle number plate | `isValidVehiclePlate(plate)` | `lanka-validations/vehicle` |
+| Parse or validate a rupee amount | `parseLKR(input)`, `validateLKR(input, { min, max })` | `lanka-validations/currency` |
+| Format rupees with lakh grouping (15,00,000.00) | `formatLKR(amount, { lakhScale: true })` | `lanka-validations/currency` |
+| Write an amount in words (English, Sinhala, Tamil) | `lkrToWords(amount, { language })` | `lanka-validations/currency` |
+| Handle money exactly, in cents | `parseLKRMinorUnits(text)` | `lanka-validations/currency` |
+| Find the district for a postal code | `lookupPostalCode(code)` | `lanka-validations/postal-code` |
+| Look up a bank by CBSL code | `getBankByCode(code)` | `lanka-validations/bank` |
+| Check a TIN or VAT number | `isValidTIN(tin)`, `isValidVAT(vat)` | `lanka-validations/tax` |
+| List provinces and districts in three languages | `getProvinces()`, `getDistricts()` | `lanka-validations/administrative` |
+| Validate a whole form object | `createSchemaValidator({ ... })` with `rules` | `lanka-validations/schema` |
+| Show errors in Sinhala or Tamil | `localizeValidationResult(result, 'si')` | `lanka-validations/i18n` |
+| Mask an NIC, phone, or account number for logs | `maskNic(nic)`, `maskPhone(phone)`, `maskBankAccount(account)` | `lanka-validations/privacy` |
+
+Subpath imports keep bundles small: importing `isValidNic` alone adds about 1 kB. Everything is also exported from the package root.
+
+Full API reference: **https://mmsalmanfaris.github.io/lanka-validations/**
 
 ---
 
 ## Table of Contents
 
-- [Overview](#overview)
+- [Quick Start](#quick-start)
+- [Which Function Do I Use?](#which-function-do-i-use)
 - [Key Capabilities](#key-capabilities)
 - [What Validation Means](#what-validation-means)
 - [Data Sources](#data-sources)
@@ -37,16 +96,12 @@ High-performance, zero-dependency Sri Lankan data validation and parsing library
   - [12. Administrative Divisions (Provinces and Districts)](#12-administrative-divisions-provinces-and-districts)
   - [13. Schema and Form Validator](#13-schema-and-form-validator)
 - [Cross-Field Verification (NIC Matching)](#cross-field-verification-nic-matching)
+- [Using with Zod, React Hook Form, and Express](#using-with-zod-react-hook-form-and-express)
 - [API Reference](#api-reference)
+- [Frequently Asked Questions](#frequently-asked-questions)
 - [Contributing](#contributing)
 - [Author](#author)
 - [License](#license)
-
----
-
-## Overview
-
-Software built for Sri Lanka frequently requires validating local document numbers, currency formats, operator codes, and administrative structures. `lanka-validations` solves this by delivering a lightweight, well-tested toolkit that has no external dependencies and runs in Node.js, browsers, Deno, Bun, and serverless environments.
 
 ---
 
@@ -58,6 +113,7 @@ Software built for Sri Lanka frequently requires validating local document numbe
 - **Bidirectional NIC Conversion**: Converts smoothly between Old (9-digit + V/X) and New (12-digit) NIC numbers.
 - **Cross-Field KYC Integrity**: Checks if a submitted Date of Birth and Gender match the embedded data in a National Identity Card.
 - **Modular and Tree-Shakeable**: Import only the validators you need using subpath exports.
+- **Safe on Untrusted Input**: Validators accept `unknown`, never throw, and reject inputs over 1,024 characters. Property-based tests check this across thousands of generated inputs.
 
 ---
 
@@ -318,7 +374,7 @@ Validates that a date is in the past, verifies age limits, and calculates comple
 ```typescript
 import { isValidDob, calculateAge } from 'lanka-validations/dob';
 
-calculateAge('2000-01-01'); // 25
+calculateAge('2000-01-01', new Date('2025-06-01')); // 25 (age on a given date; defaults to today)
 isValidDob('1995-05-20');   // true
 isValidDob('2015-01-01', { minAge: 18 }); // false (underage)
 ```
@@ -479,6 +535,57 @@ matchesNicGender('female', userNic); // false (Gender mismatch)
 
 ---
 
+## Using with Zod, React Hook Form, and Express
+
+The predicates return plain booleans, so they plug into any validation library.
+
+**Zod**
+
+```typescript
+import { z } from 'zod';
+import { isValidNic } from 'lanka-validations/nic';
+import { isValidMobile } from 'lanka-validations/phone';
+
+const SignUp = z.object({
+  nic: z.string().refine(isValidNic, { message: 'Enter a valid Sri Lankan NIC number' }),
+  phone: z.string().refine(isValidMobile, { message: 'Enter a Sri Lankan mobile number' }),
+});
+```
+
+**React Hook Form**
+
+```tsx
+import { useForm } from 'react-hook-form';
+import { isValidNic } from 'lanka-validations/nic';
+
+const { register } = useForm<{ nic: string }>();
+
+<input {...register('nic', { validate: (value) => isValidNic(value) || 'Invalid NIC number' })} />;
+```
+
+**Express**
+
+```typescript
+import express from 'express';
+import { validateNic } from 'lanka-validations/nic';
+
+const app = express();
+app.use(express.json());
+
+app.post('/customers', (req, res) => {
+  const nic = validateNic(req.body.nic);
+  if (!nic.isValid) {
+    res.status(400).json({ code: nic.code, error: nic.error });
+    return;
+  }
+  res.json({ dateOfBirth: nic.data.dobString, gender: nic.data.gender });
+});
+```
+
+To validate several fields at once with typed output, use the built-in [schema validator](#13-schema-and-form-validator).
+
+---
+
 ## API Reference
 
 Full generated documentation for every export: **https://mmsalmanfaris.github.io/lanka-validations/**
@@ -607,6 +714,50 @@ NICs, phone numbers, or other personal identifiers. All code paths preserve the
 existing detached-copy behavior of lookup results. The benchmark implementation uses
 [Node's performance clock](https://nodejs.org/api/perf_hooks.html) and
 [memory-usage API](https://nodejs.org/api/process.html#processmemoryusage).
+
+## Frequently Asked Questions
+
+### How do I validate a Sri Lankan NIC number in JavaScript or TypeScript?
+
+Install `lanka-validations` and call `isValidNic(value)` from `lanka-validations/nic`. It returns `true` for valid old-format (9 digits plus V or X) and new-format (12 digits) numbers. Use `validateNic(value)` to also get the date of birth, age, gender, and an error code when it fails.
+
+### How do I get the date of birth and gender from an NIC?
+
+Call `parseNic('921234567V')`. It returns `dobString` (`'1992-05-02'`), `dob` as a UTC `Date`, `age`, `gender` (`'male'` or `'female'`), and both the old and new forms of the number. It returns `null` for invalid input. The birth year and day of year are encoded in the number; 500 is added to the day for women.
+
+### How do I convert an old NIC to the new 12-digit format?
+
+Use `convertOldToNewNic('921234567V')`, which returns `'199212304567'`. `convertNewToOldNic` converts back for people born between 1900 and 1999. Both return `null` when the input is not a valid NIC of the expected format.
+
+### Does it check that an NIC, phone number, or bank account really exists?
+
+No. It checks format and consistency with published rules and reference tables. It cannot tell whether a number was issued, who owns it, or whether an account is open. For KYC, confirm identity with the issuing authority or a verification provider. See [What Validation Means](#what-validation-means).
+
+### Does it work in the browser, React, Next.js, Deno, and Bun?
+
+Yes. It has no runtime dependencies and uses no Node.js-only APIs, so it runs in browsers, React and Next.js (client and server), Node.js 20+, Deno, and Bun. It ships both ESM and CommonJS builds with TypeScript types, and subpath imports such as `lanka-validations/nic` keep bundles small.
+
+### Can I show validation errors in Sinhala or Tamil?
+
+Yes. Every failure has a stable `code`. Pass a result to `localizeValidationResult(result, 'si')` or `'ta'` from `lanka-validations/i18n`, or use `localizeSchemaResult` for whole forms. You can override any message by code with your own text.
+
+### Why does `isValidTIN` reject an NIC number?
+
+An NIC is not a TIN. Individuals register with the Inland Revenue Department using their NIC and receive a separate 9- or 10-digit TIN. Since 2.0.0, `isValidTIN` accepts only TIN formats; validate NIC fields with `isValidNic`.
+
+### How up to date is the reference data?
+
+Each bundled table (provinces, districts, bank codes, postal prefixes, phone prefixes, licence classes) records its official source, as-of date, and known gaps. Read them at runtime with `getReferenceDataMetadata()` or in the [Data Sources](#data-sources) table. Report outdated entries with the data-correction issue form.
+
+### How do I upgrade from 1.x to 2.x?
+
+2.0.0 requires Node.js 20+, rejects malformed input that 1.x accepted, stops treating NIC numbers as TINs, freezes the exported reference tables, and turns `ValidationResult` into a union you narrow with `isValid`. The [changelog](CHANGELOG.md) lists every breaking change.
+
+### What should I use instead?
+
+For international phone numbers from many countries, use `libphonenumber-js`. For generic checks such as email addresses or URLs, use a general-purpose validator. Use `lanka-validations` for Sri Lanka-specific identifiers and data; it combines well with both.
+
+---
 
 ## Contributing
 
