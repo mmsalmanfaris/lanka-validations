@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  isValidGender,
-  matchesNicGender,
-  normalizeGender,
-  validateGender,
-} from '../src/gender';
+import { isValidGender, matchesNicGender, normalizeGender, validateGender } from '../src/gender';
 
 describe('Gender Module', () => {
   it('normalizes English variations', () => {
@@ -50,4 +45,3 @@ describe('Gender Module', () => {
     expect(validateGender('unknown').code).toBe('GENDER_INVALID');
   });
 });
-

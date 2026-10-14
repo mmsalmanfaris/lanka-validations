@@ -1,13 +1,17 @@
 import type { ValidationResult } from './types';
 
+/** Maximum raw scalar string length, in UTF-16 code units, before normalization. */
+export const MAX_INPUT_LENGTH = 1024;
+
 /**
- * Strips whitespace, hyphens, and non-printable control characters from input string.
+ * Trims strings and removes zero-width spaces/BOMs. Accepts finite numbers
+ * explicitly; rejects other types without invoking user-defined coercion.
  */
 export function cleanString(input: unknown): string {
   if (typeof input !== 'string') {
-    if (input === null || input === undefined) return '';
-    return String(input).trim();
+    return typeof input === 'number' && Number.isFinite(input) ? String(input) : '';
   }
+  if (input.length > MAX_INPUT_LENGTH) return '';
   return input.trim().replace(/[\u200B\uFEFF]/g, '');
 }
 
@@ -48,7 +52,7 @@ export function formatIsoDate(date: Date): string {
 export function isValidCalendarDate(year: number, month: number, day: number): boolean {
   if (year < 1800 || year > 2200 || month < 1 || month > 12 || day < 1) return false;
   const daysInMonth = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  return day <= daysInMonth[month - 1];
+  return day <= daysInMonth[month - 1]!;
 }
 
 /**
@@ -66,8 +70,8 @@ export function createSuccess<T>(data: T): ValidationResult<T> {
  */
 export function createFailure<T = unknown>(
   error: string,
-  code?: string,
-  errors?: string[]
+  code = 'VALIDATION_FAILED',
+  errors?: string[],
 ): ValidationResult<T> {
   return {
     isValid: false,

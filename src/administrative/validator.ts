@@ -2,18 +2,34 @@ import { cleanString } from '../common/utils';
 import { DISTRICTS, PROVINCES } from './data';
 import type { DistrictInfo, ProvinceInfo } from './types';
 
+const PROVINCE_INDEX = new Map<string, (typeof PROVINCES)[number]>();
+for (const province of PROVINCES) {
+  for (const alias of [province.code, province.name, province.nameSi, province.nameTa]) {
+    PROVINCE_INDEX.set(alias.toLowerCase(), province);
+  }
+}
+
+const DISTRICT_INDEX = new Map<string, (typeof DISTRICTS)[number]>();
+for (const district of DISTRICTS) {
+  for (const alias of [district.name, district.nameSi, district.nameTa]) {
+    DISTRICT_INDEX.set(alias.toLowerCase(), district);
+  }
+}
+
 /**
  * Validates whether the given string is a valid Sri Lankan province name, Sinhala/Tamil name, or province code (e.g. 'WP', 'Western', 'බස්නාහිර').
  */
 export function isValidProvince(p: unknown): boolean {
-  return getProvinceInfo(p) !== null;
+  const cleaned = cleanString(p).toLowerCase();
+  return cleaned !== '' && PROVINCE_INDEX.has(cleaned);
 }
 
 /**
  * Validates whether the given string is a valid Sri Lankan district name, Sinhala name, or Tamil name (e.g. 'Colombo', 'කොළඹ', 'கொழும்பு').
  */
 export function isValidDistrict(d: unknown): boolean {
-  return getDistrictInfo(d) !== null;
+  const cleaned = cleanString(d).toLowerCase();
+  return cleaned !== '' && DISTRICT_INDEX.has(cleaned);
 }
 
 /**
@@ -23,18 +39,8 @@ export function getProvinceInfo(p: unknown): ProvinceInfo | null {
   const cleaned = cleanString(p).toLowerCase();
   if (!cleaned) return null;
 
-  for (const prov of PROVINCES) {
-    if (
-      prov.code.toLowerCase() === cleaned ||
-      prov.name.toLowerCase() === cleaned ||
-      prov.nameSi.toLowerCase() === cleaned ||
-      prov.nameTa.toLowerCase() === cleaned
-    ) {
-      return prov;
-    }
-  }
-
-  return null;
+  const province = PROVINCE_INDEX.get(cleaned);
+  return province ? { ...province, districts: [...province.districts] } : null;
 }
 
 /**
@@ -44,30 +50,20 @@ export function getDistrictInfo(d: unknown): DistrictInfo | null {
   const cleaned = cleanString(d).toLowerCase();
   if (!cleaned) return null;
 
-  for (const dist of DISTRICTS) {
-    if (
-      dist.name.toLowerCase() === cleaned ||
-      dist.nameSi.toLowerCase() === cleaned ||
-      dist.nameTa.toLowerCase() === cleaned
-    ) {
-      return dist;
-    }
-  }
-
-  return null;
+  const district = DISTRICT_INDEX.get(cleaned);
+  return district ? { ...district } : null;
 }
 
 /**
  * Returns all 9 Sri Lankan provinces with details.
  */
 export function getProvinces(): ProvinceInfo[] {
-  return PROVINCES;
+  return PROVINCES.map((prov) => ({ ...prov, districts: [...prov.districts] }));
 }
 
 /**
  * Returns all 25 Sri Lankan districts with details.
  */
 export function getDistricts(): DistrictInfo[] {
-  return DISTRICTS;
+  return DISTRICTS.map((dist) => ({ ...dist }));
 }
-

@@ -1,11 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  formatLKR,
-  isValidLKR,
-  lkrToWords,
-  parseLKR,
-  validateLKR,
-} from '../src/currency';
+import { formatLKR, isValidLKR, lkrToWords, parseLKR, validateLKR } from '../src/currency';
 
 describe('Currency (LKR) Module', () => {
   describe('parseLKR', () => {
@@ -64,9 +58,7 @@ describe('Currency (LKR) Module', () => {
   describe('lkrToWords (Number to Words)', () => {
     it('converts to English words', () => {
       expect(lkrToWords(1500)).toBe('One Thousand Five Hundred Rupees Only');
-      expect(lkrToWords(1500.5)).toBe(
-        'One Thousand Five Hundred Rupees and Fifty Cents Only'
-      );
+      expect(lkrToWords(1500.5)).toBe('One Thousand Five Hundred Rupees and Fifty Cents Only');
       expect(lkrToWords(1)).toBe('One Rupee Only');
       expect(lkrToWords(0)).toBe('Zero Rupees Only');
     });
@@ -103,4 +95,3 @@ describe('Currency (LKR) Module', () => {
     });
   });
 });
-

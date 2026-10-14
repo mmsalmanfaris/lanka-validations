@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  isValidPostalCode,
-  lookupPostalCode,
-  validatePostalCode,
-} from '../src/postal-code';
+import { isValidPostalCode, lookupPostalCode, validatePostalCode } from '../src/postal-code';
 
 describe('Postal Code Module', () => {
   it('validates and looks up Colombo post codes (00100)', () => {
@@ -47,4 +43,3 @@ describe('Postal Code Module', () => {
     expect(validatePostalCode('99999').code).toBe('POSTAL_CODE_OUT_OF_RANGE');
   });
 });
-

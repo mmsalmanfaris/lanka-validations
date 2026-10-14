@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  isValidTIN,
-  isValidVAT,
-  validateTIN,
-  validateVAT,
-} from '../src/tax';
+import { isValidTIN, isValidVAT, validateTIN, validateVAT } from '../src/tax';
 
 describe('Tax Module', () => {
   it('validates 9-digit and 10-digit TIN numbers', () => {
@@ -12,9 +7,9 @@ describe('Tax Module', () => {
     expect(isValidTIN('1234567890')).toBe(true);
   });
 
-  it('validates NIC-based TIN numbers', () => {
-    expect(isValidTIN('921234567V')).toBe(true);
-    expect(isValidTIN('199212304567')).toBe(true);
+  it('rejects NIC numbers, which are not TINs', () => {
+    expect(isValidTIN('921234567V')).toBe(false);
+    expect(isValidTIN('199212304567')).toBe(false);
   });
 
   it('rejects invalid TIN numbers', () => {
@@ -37,4 +32,3 @@ describe('Tax Module', () => {
     expect(validateVAT('').isValid).toBe(false);
   });
 });
-

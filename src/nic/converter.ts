@@ -1,12 +1,13 @@
 import { parseNic } from './parser';
+import type { NicOptions } from './types';
 
 /**
  * Converts a 10-character Old Sri Lankan NIC (9 digits + V/X) into a 12-digit New NIC.
  * Format: 19YY + DDD + 0 + SSS + C
  * Example: 921234567V -> 199212304567
  */
-export function convertOldToNewNic(oldNic: unknown): string | null {
-  const info = parseNic(oldNic);
+export function convertOldToNewNic(oldNic: unknown, options?: NicOptions): string | null {
+  const info = parseNic(oldNic, options);
   if (!info || info.format !== 'old') {
     return null;
   }
@@ -20,9 +21,9 @@ export function convertOldToNewNic(oldNic: unknown): string | null {
  */
 export function convertNewToOldNic(
   newNic: unknown,
-  options?: { isVoter?: boolean }
+  options?: NicOptions & { isVoter?: boolean },
 ): string | null {
-  const info = parseNic(newNic);
+  const info = parseNic(newNic, options);
   if (!info || info.format !== 'new' || !info.oldNic) {
     return null;
   }
@@ -31,4 +32,3 @@ export function convertNewToOldNic(
   // Replace the default 'V' with chosen suffix
   return info.oldNic.slice(0, 9) + suffix;
 }
-

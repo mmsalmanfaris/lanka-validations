@@ -1,6 +1,6 @@
 import { cleanString, createFailure, createSuccess } from '../common/utils';
 import type { ValidationResult } from '../common/types';
-import { parsePhone } from './parser';
+import { normalizePhoneNumber, parsePhone } from './parser';
 import type { PhoneInfo } from './types';
 
 /**
@@ -8,6 +8,12 @@ import type { PhoneInfo } from './types';
  */
 export function isValidPhone(phone: unknown): boolean {
   return parsePhone(phone) !== null;
+}
+
+/** Validates a full contact number, excluding service and emergency short codes. */
+export function isValidContactPhone(phone: unknown): boolean {
+  const info = parsePhone(phone);
+  return info !== null && info.type !== 'short_code';
 }
 
 /**
@@ -38,19 +44,20 @@ export function isValidShortCode(code: unknown): boolean {
  * Detailed validation returning structured ValidationResult with error code and messages.
  */
 export function validatePhone(phone: unknown): ValidationResult<PhoneInfo> {
-  const cleaned = cleanString(phone);
-  if (!cleaned) {
+  const info = parsePhone(phone);
+  if (info) return createSuccess(info);
+
+  if (!cleanString(phone)) {
     return createFailure('Phone number is required.', 'PHONE_REQUIRED');
   }
 
-  const info = parsePhone(cleaned);
-  if (!info) {
+  const cleaned = cleanString(phone);
+  const normalized = normalizePhoneNumber(cleaned);
+  if (/^0[0-9]{9}$/.test(normalized) || /^[0-9]{3,4}$/.test(cleaned)) {
     return createFailure(
-      'Invalid Sri Lankan phone number. Must be a valid mobile (e.g. 077XXXXXXX) or landline (e.g. 011XXXXXXX).',
-      'PHONE_INVALID'
+      'Phone number prefix or short code is not in the bundled reference data.',
+      'PHONE_UNSUPPORTED',
     );
   }
-
-  return createSuccess(info);
+  return createFailure('Invalid Sri Lankan phone number format.', 'PHONE_INVALID');
 }
-

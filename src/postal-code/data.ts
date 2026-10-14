@@ -1,10 +1,13 @@
+import { deepFreeze } from '../common/freeze';
+/** The district and province for a two-digit postal-code prefix. */
 export interface PrefixMapping {
   prefix: string;
   district: string;
   province: string;
 }
 
-export const POSTAL_PREFIXES: Record<string, PrefixMapping> = {
+/** Two-digit postal-code prefixes (for example `'20'`) mapped to their district and province. Covers routing prefixes, not every delivery office. */
+export const POSTAL_PREFIXES: Readonly<Record<string, Readonly<PrefixMapping>>> = {
   '00': { prefix: '00', district: 'Colombo', province: 'Western' },
   '01': { prefix: '01', district: 'Colombo', province: 'Western' },
   '10': { prefix: '10', district: 'Colombo', province: 'Western' },
@@ -34,7 +37,8 @@ export const POSTAL_PREFIXES: Record<string, PrefixMapping> = {
   '91': { prefix: '91', district: 'Monaragala', province: 'Uva' },
 };
 
-export const MAJOR_CITIES: Record<string, string> = {
+/** Selected five-digit postal codes (for example `'20000'`) mapped to their main city. */
+export const MAJOR_CITIES: Readonly<Record<string, string>> = {
   '00100': 'Colombo 01 (Fort)',
   '00200': 'Colombo 02 (Slave Island)',
   '00300': 'Colombo 03 (Kollupitiya)',
@@ -95,3 +99,5 @@ export const MAJOR_CITIES: Record<string, string> = {
   '91000': 'Monaragala',
 };
 
+deepFreeze(POSTAL_PREFIXES);
+deepFreeze(MAJOR_CITIES);

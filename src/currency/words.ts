@@ -73,7 +73,7 @@ function englishIntegerToWords(n: number): string {
       const count = Math.floor(rem / scale.value);
       rem %= scale.value;
       const part = englishNumberUnderThousand(count);
-      result += (part ? part + (scale.name ? ' ' + scale.name : '') + ' ' : '');
+      result += part ? part + (scale.name ? ' ' + scale.name : '') + ' ' : '';
     }
   }
 
@@ -104,31 +104,9 @@ const SI_ONES = [
   'දහනවය',
 ];
 
-const SI_TENS = [
-  '',
-  '',
-  'විසි',
-  'තිස්',
-  'සතලිස්',
-  'පනස්',
-  'හැට',
-  'හැත්තෑ',
-  'අසූ',
-  'අනූ',
-];
+const SI_TENS = ['', '', 'විසි', 'තිස්', 'සතලිස්', 'පනස්', 'හැට', 'හැත්තෑ', 'අසූ', 'අනූ'];
 
-const SI_TENS_FULL = [
-  '',
-  '',
-  'විස්ස',
-  'තිහ',
-  'සතලිහ',
-  'පනහ',
-  'හැට',
-  'හැත්තෑව',
-  'අසූව',
-  'අනූව',
-];
+const SI_TENS_FULL = ['', '', 'විස්ස', 'තිහ', 'සතලිහ', 'පනහ', 'හැට', 'හැත්තෑව', 'අසූව', 'අනූව'];
 
 const SI_HUNDREDS = [
   '',
@@ -281,7 +259,7 @@ function tamilNumberUnderThousand(n: number): string {
     const h = Math.floor(n / 100);
     n %= 100;
     if (n === 0) {
-      return TA_HUNDREDS[h];
+      return TA_HUNDREDS[h]!;
     }
     s += TA_HUNDREDS_PREFIX[h];
   }
@@ -292,7 +270,7 @@ function tamilNumberUnderThousand(n: number): string {
     if (ones === 0) {
       s += TA_TENS[tens];
     } else {
-      s += TA_TENS_PREFIX[tens] + TA_ONES[ones];
+      s += TA_TENS_PREFIX[tens]! + TA_ONES[ones]!;
     }
   } else if (n > 0) {
     s += TA_ONES[n];
@@ -317,7 +295,7 @@ function tamilIntegerToWords(n: number): string {
     const t = Math.floor(rem / 1_000);
     rem %= 1_000;
     if (t === 1) {
-      result += (rem === 0 ? 'ஆயிரம் ' : 'ஆயிரத்து ');
+      result += rem === 0 ? 'ஆயிரம் ' : 'ஆயிரத்து ';
     } else {
       result += tamilNumberUnderThousand(t) + (rem === 0 ? ' ஆயிரம் ' : ' ஆயிரத்து ');
     }
@@ -344,15 +322,32 @@ export function lkrToWords(amount: number, options?: WordsOptions): string {
   const includeCents = options?.includeCents ?? true;
   const isNeg = amount < 0;
   const absAmount = Math.abs(amount);
-
-  const rupees = Math.floor(absAmount);
-  const cents = Math.round((absAmount - rupees) * 100);
+  // Each scale helper supports counts below 1000. Reject unsupported scales
+  // instead of returning incorrect words, including when rounding crosses a limit.
+  const limit = lang === 'en' ? 1e12 : 1e9;
+  if (!Number.isFinite(amount) || absAmount >= limit) {
+    throw new RangeError(`Amount must be finite with magnitude below ${limit} rupees.`);
+  }
+  // Shift the shortest decimal representation, avoiding e.g. 1.005 * 100.
+  // Round half away from zero, once, before splitting rupees and cents.
+  const [coefficient, exponent = '0'] = absAmount.toString().split('e');
+  const minorUnits = Math.round(Number(`${coefficient}e${Number(exponent) + 2}`));
+  if (minorUnits >= limit * 100) {
+    throw new RangeError('Rounded amount exceeds the supported word scale.');
+  }
+  const rupees = Math.floor(minorUnits / 100);
+  const cents = minorUnits % 100;
 
   if (lang === 'si') {
     let text = `රුපියල් ${sinhalaIntegerToWords(rupees)}`;
     if (text.endsWith('ය')) {
       text += 'යි';
-    } else if (text.endsWith('හ') || text.endsWith('ක') || text.endsWith('න') || text.endsWith('ට')) {
+    } else if (
+      text.endsWith('හ') ||
+      text.endsWith('ක') ||
+      text.endsWith('න') ||
+      text.endsWith('ට')
+    ) {
       text += 'යි';
     } else {
       text += 'යි';
@@ -391,4 +386,3 @@ export function lkrToWords(amount: number, options?: WordsOptions): string {
 
   return (isNeg ? 'Minus ' : '') + result.trim();
 }
-

@@ -1,4 +1,6 @@
-export const VEHICLE_PROVINCES: Record<string, string> = {
+import { deepFreeze } from '../common/freeze';
+/** Two-letter province prefixes on vehicle plates (for example `'WP'`) mapped to province names. */
+export const VEHICLE_PROVINCES: Readonly<Record<string, string>> = {
   WP: 'Western Province',
   CP: 'Central Province',
   SP: 'Southern Province',
@@ -10,3 +12,4 @@ export const VEHICLE_PROVINCES: Record<string, string> = {
   SG: 'Sabaragamuwa Province',
 };
 
+deepFreeze(VEHICLE_PROVINCES);

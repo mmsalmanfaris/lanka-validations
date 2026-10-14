@@ -1,9 +1,13 @@
+/** Kind of number detected by {@link parsePhone}. */
 export type PhoneType = 'mobile' | 'fixed' | 'short_code' | 'toll_free';
 
+/** Operator the mobile prefix was originally allocated to. Numbers can be ported between networks, so this may not be the current operator. */
 export type MobileOperator = 'Dialog' | 'Mobitel' | 'Hutch' | 'Airtel';
 
+/** Fixed-line operator inferred from the digit after the area code. */
 export type FixedOperator = 'SLT' | 'Dialog Broadband' | 'Lanka Bell' | 'Other';
 
+/** Details of a valid phone number, returned by {@link parsePhone}. */
 export interface PhoneInfo {
   /** The original input string */
   raw: string;
@@ -27,9 +31,9 @@ export interface PhoneInfo {
   district: string | null;
 }
 
+/** A public 3- or 4-digit service number, such as 119 (police). */
 export interface ShortCodeInfo {
   code: string;
   name: string;
   category: 'emergency' | 'government' | 'utility' | 'helpline';
 }
-

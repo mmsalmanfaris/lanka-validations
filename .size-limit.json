@@ -1,0 +1,33 @@
+[
+  { "name": "Everything (ESM)", "path": "dist/index.mjs", "import": "*", "limit": "18 kB" },
+  {
+    "name": "isValidNic from root",
+    "path": "dist/index.mjs",
+    "import": "{ isValidNic }",
+    "limit": "1 kB"
+  },
+  {
+    "name": "lanka-validations/nic",
+    "path": "dist/nic/index.mjs",
+    "import": "{ validateNic }",
+    "limit": "1.4 kB"
+  },
+  {
+    "name": "lanka-validations/phone",
+    "path": "dist/phone/index.mjs",
+    "import": "{ validatePhone }",
+    "limit": "1.7 kB"
+  },
+  {
+    "name": "lanka-validations/currency",
+    "path": "dist/currency/index.mjs",
+    "import": "{ validateLKR, formatLKR }",
+    "limit": "1.2 kB"
+  },
+  {
+    "name": "lanka-validations/schema",
+    "path": "dist/schema/index.mjs",
+    "import": "{ createSchemaValidator, rules }",
+    "limit": "8.5 kB"
+  }
+]
