@@ -16,11 +16,13 @@ export default defineConfig({
     'src/tax/index.ts',
     'src/administrative/index.ts',
     'src/schema/index.ts',
+    'src/privacy/index.ts',
+    'src/i18n/index.ts',
+    'src/reference-data/index.ts',
   ],
   format: ['cjs', 'esm'],
-  dts: false,
+  dts: true,
   clean: true,
-  sourcemap: false,
+  sourcemap: true,
   minify: false,
 });
-

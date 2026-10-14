@@ -1,36 +1,45 @@
 import { cleanString } from '../common/utils';
 
+/** Maximum magnitude accepted by the floating-point parser (rupees). */
+export const MAX_LKR_AMOUNT = Number.MAX_SAFE_INTEGER / 100;
+
 /**
- * Parses a currency string in Sri Lankan Rupee format (e.g. 'Rs. 1,500.50', 'LKR 2500', 'රු. 500')
- * into a valid numeric float.
- * Returns the parsed number, or null if invalid.
+ * Parses ungrouped, Western-grouped or South Asian-grouped amounts.
+ * One optional currency prefix OR suffix is allowed, with a leading minus
+ * or enclosing parentheses for negatives. Returns an approximate JS number;
+ * fractional digits are preserved without rounding, subject to Number precision.
  */
 export function parseLKR(input: unknown): number | null {
   if (typeof input === 'number') {
-    return isNaN(input) ? null : input;
+    return Number.isFinite(input) && Math.abs(input) <= MAX_LKR_AMOUNT ? input : null;
   }
 
-  const str = cleanString(input);
+  let str = cleanString(input);
   if (!str) return null;
 
-  // Check negative
-  const isNegative = /^\s*-\s*/.test(str) || /\(\s*.*\s*\)/.test(str);
-
-  // Remove currency symbols, parentheses, commas, whitespace
-  const sanitized = str
-    .replace(/^-\s*/, '')
-    .replace(/^\(|\)$/g, '')
-    .replace(/(?:Rs\.?|රු\.?|ரூ\.?|LKR)\s*/gi, '')
-    .replace(/,/g, '')
-    .trim();
-
-  if (!/^\d+(\.\d+)?$/.test(sanitized)) {
-    return null;
+  let negative = false;
+  if (str.startsWith('(') && str.endsWith(')')) {
+    negative = true;
+    str = str.slice(1, -1).trim();
+  } else if (str.startsWith('-')) {
+    negative = true;
+    str = str.slice(1).trim();
   }
 
-  const num = parseFloat(sanitized);
-  if (isNaN(num)) return null;
+  const prefix = /^(?:Rs\.?|රු\.?|ரூ\.?|LKR)\s*/i;
+  const suffix = /\s*(?:Rs\.?|රු\.?|ரூ\.?|LKR)$/i;
+  if (prefix.test(str)) str = str.replace(prefix, '');
+  else str = str.replace(suffix, '');
 
-  return isNegative ? -num : num;
+  // Grouping must be validated before commas are removed.
+  if (
+    !/^(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+|[0-9]{1,2}(?:,[0-9]{2})+,[0-9]{3})(?:\.[0-9]+)?$/.test(
+      str,
+    )
+  ) {
+    return null;
+  }
+  const amount = Number(str.replace(/,/g, ''));
+  if (!Number.isFinite(amount) || amount > MAX_LKR_AMOUNT) return null;
+  return negative ? -amount : amount;
 }
-

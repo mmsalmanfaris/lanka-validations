@@ -1,17 +1,18 @@
-import { cleanString, formatIsoDate, isLeapYear, padZero } from '../common/utils';
-import type { Gender, NicFormat, NicInfo } from './types';
+import { cleanString, isLeapYear, padZero } from '../common/utils';
+import type { Gender, NicFormat, NicInfo, NicOptions } from './types';
 
 const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
 /**
  * Parses raw days of year (001 - 866) into month (1-12) and day of month (1-31).
- * Sri Lanka DRP uses a standard 366-day leap year table.
+ * Uses the library's legacy 366-day table. The non-leap day-60 mapping
+ * remains a compatibility rule pending authoritative DRP confirmation.
  */
 export function parseNicDayOfYear(
   year: number,
-  dayOfYear: number
+  dayOfYear: number,
 ): { month: number; day: number } | null {
-  if (dayOfYear < 1 || dayOfYear > 366) {
+  if (!Number.isInteger(year) || !Number.isInteger(dayOfYear) || dayOfYear < 1 || dayOfYear > 366) {
     return null;
   }
 
@@ -19,7 +20,7 @@ export function parseNicDayOfYear(
   let month = 0;
 
   for (let i = 0; i < DAYS_IN_MONTH.length; i++) {
-    const daysInThisMonth = DAYS_IN_MONTH[i];
+    const daysInThisMonth = DAYS_IN_MONTH[i]!;
     if (remaining <= daysInThisMonth) {
       month = i + 1;
       break;
@@ -41,11 +42,13 @@ export function parseNicDayOfYear(
  * Parses a Sri Lankan National Identity Card number.
  * Returns structured NicInfo if valid, or null if invalid.
  */
-export function parseNic(rawNic: unknown): NicInfo | null {
+export function parseNic(rawNic: unknown, options?: NicOptions): NicInfo | null {
   const cleaned = cleanString(rawNic).toUpperCase();
   if (!cleaned) return null;
 
-  const currentYear = new Date().getFullYear();
+  const today = options?.referenceDate ?? new Date();
+  if (!(today instanceof Date) || !Number.isFinite(today.getTime())) return null;
+  const currentYear = today.getUTCFullYear();
   let format: NicFormat;
   let year: number;
   let rawDays: number;
@@ -114,7 +117,7 @@ export function parseNic(rawNic: unknown): NicInfo | null {
   const dobString = `${year}-${padZero(dateParts.month, 2)}-${padZero(dateParts.day, 2)}`;
 
   // Calculate age
-  const today = new Date();
+  if (dob.getTime() > today.getTime()) return null;
   let age = today.getUTCFullYear() - year;
   const birthMonth = dateParts.month - 1;
   const currentMonth = today.getUTCMonth();
@@ -141,4 +144,3 @@ export function parseNic(rawNic: unknown): NicInfo | null {
     oldNic,
   };
 }
-

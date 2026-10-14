@@ -8,12 +8,12 @@ import type { PostalCodeInfo } from './types';
  */
 export function normalizePostalCode(input: unknown): string | null {
   if (typeof input === 'number') {
-    if (input < 0 || input > 99999) return null;
+    if (!Number.isInteger(input) || input < 0 || input > 99999) return null;
     return padZero(input, 5);
   }
 
-  const cleaned = cleanString(input).replace(/\D/g, '');
-  if (!cleaned) return null;
+  const cleaned = cleanString(input);
+  if (!/^[0-9]{1,5}$/.test(cleaned)) return null;
 
   if (cleaned.length <= 5) {
     return cleaned.padStart(5, '0');
@@ -59,18 +59,17 @@ export function validatePostalCode(code: unknown): ValidationResult<PostalCodeIn
   if (!normalized) {
     return createFailure(
       'Invalid postal code format. Expected a 5-digit code (e.g. "00100", "20000").',
-      'POSTAL_CODE_INVALID_FORMAT'
+      'POSTAL_CODE_INVALID_FORMAT',
     );
   }
 
   const info = lookupPostalCode(normalized);
   if (!info) {
     return createFailure(
-      `Postal code ${normalized} is not within any known Sri Lankan postal district range.`,
-      'POSTAL_CODE_OUT_OF_RANGE'
+      'Postal code is not within the bundled Sri Lankan postal district ranges.',
+      'POSTAL_CODE_OUT_OF_RANGE',
     );
   }
 
   return createSuccess(info);
 }
-

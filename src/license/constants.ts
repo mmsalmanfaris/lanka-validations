@@ -1,6 +1,8 @@
+import { deepFreeze } from '../common/freeze';
 import type { LicenseCategoryInfo } from './types';
 
-export const DMT_LICENSE_CATEGORIES: Record<string, LicenseCategoryInfo> = {
+/** DMT vehicle classes keyed by code (for example `'B1'`). Prefer {@link getLicenseCategoryInfo}, which returns a copy. */
+export const DMT_LICENSE_CATEGORIES: Readonly<Record<string, Readonly<LicenseCategoryInfo>>> = {
   A1: {
     category: 'A1',
     name: 'Light Motor Cycle',
@@ -81,3 +83,4 @@ export const DMT_LICENSE_CATEGORIES: Record<string, LicenseCategoryInfo> = {
   },
 };
 
+deepFreeze(DMT_LICENSE_CATEGORIES);

@@ -1,5 +1,6 @@
 import { parsePhone } from './parser';
 
+/** Output layout for {@link formatPhone}: `'e164'` (+94771234567), `'national'` (077 123 4567), `'international'` (+94 77 123 4567), or `'rfc3966'` (a `tel:` URI). */
 export type PhoneFormatStyle = 'e164' | 'national' | 'international' | 'rfc3966';
 
 /**
@@ -11,10 +12,7 @@ export type PhoneFormatStyle = 'e164' | 'national' | 'international' | 'rfc3966'
  * - formatPhone('0771234567', 'international') -> '+94 77 123 4567'
  * - formatPhone('0771234567', 'rfc3966') -> 'tel:+94-77-123-4567'
  */
-export function formatPhone(
-  phone: unknown,
-  style: PhoneFormatStyle = 'national'
-): string | null {
+export function formatPhone(phone: unknown, style: PhoneFormatStyle = 'national'): string | null {
   const info = parsePhone(phone);
   if (!info) return null;
 
@@ -31,4 +29,3 @@ export function formatPhone(
       return info.national;
   }
 }
-

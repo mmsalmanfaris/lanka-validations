@@ -1,11 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  calculateAge,
-  isValidDob,
-  matchesNicDob,
-  parseDob,
-  validateDob,
-} from '../src/dob';
+import { calculateAge, isValidDob, matchesNicDob, parseDob, validateDob } from '../src/dob';
 
 describe('DOB Module', () => {
   it('parses various date formats (ISO, slash, DD-MM-YYYY)', () => {
@@ -54,4 +48,3 @@ describe('DOB Module', () => {
     expect(err.code).toBe('DOB_INVALID');
   });
 });
-

@@ -1,0 +1,49 @@
+name: Bug report
+description: A validator, parser, or formatter returns the wrong result or throws.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Security problems (for example, input that bypasses an allowlist) should be reported privately. See [SECURITY.md](https://github.com/mmsalmanfaris/lanka-validations/blob/main/SECURITY.md).
+        Please do not paste real NIC, passport, phone, or bank numbers. Use made-up values that reproduce the problem.
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: 2.0.0
+    validations:
+      required: true
+  - type: input
+    id: function
+    attributes:
+      label: Function
+      placeholder: isValidPhone
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: The smallest call that shows the problem.
+      render: ts
+      placeholder: |
+        import { isValidPhone } from 'lanka-validations/phone';
+        isValidPhone('0771234567');
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual result
+      placeholder: |
+        Expected: true
+        Actual: false
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Runtime
+      description: Node.js version, browser, Deno, or Bun; and ESM or CommonJS.
+      placeholder: Node 22.11, ESM

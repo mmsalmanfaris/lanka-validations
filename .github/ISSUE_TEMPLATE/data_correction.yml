@@ -1,0 +1,34 @@
+name: Reference data correction
+description: A bank code, phone prefix, postal code, district, licence class, or format rule is missing or out of date.
+labels: [data]
+body:
+  - type: dropdown
+    id: table
+    attributes:
+      label: Table
+      description: '`getReferenceDataMetadata()` lists every table with its current source.'
+      options:
+        - PROVINCES / DISTRICTS
+        - CBSL_BANKS
+        - POSTAL_PREFIXES / MAJOR_CITIES
+        - MOBILE_PREFIXES / AREA_CODES / FIXED_OPERATOR_DIGITS
+        - SRI_LANKA_SHORT_CODES
+        - DMT_LICENSE_CATEGORIES
+        - VEHICLE_PROVINCES
+        - NIC, passport, TIN, or VAT format rule
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: What should change
+      placeholder: CBSL code 7xxx is missing for <bank name>.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Official source
+      description: A link to the issuing authority (DRP, TRCSL, CBSL, DMT, Sri Lanka Post, IRD, or DCS). Changes need an official source.
+    validations:
+      required: true

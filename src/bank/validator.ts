@@ -7,11 +7,23 @@ import type { BankInfo } from './types';
  * Validates whether the given code is a valid 4-digit CBSL bank code.
  */
 export function isValidBankCode(code: unknown): boolean {
-  if (typeof code === 'number') {
-    code = padZero(code, 4);
+  return getBankByCode(code) !== null;
+}
+
+/** Distinguishes malformed four-digit input from an unsupported CBSL code. */
+export function validateBankCode(code: unknown): ValidationResult<BankInfo> {
+  const normalized =
+    typeof code === 'number' && Number.isInteger(code) ? padZero(code, 4) : cleanString(code);
+  if (!/^[0-9]{4}$/.test(normalized)) {
+    return createFailure('Bank code must contain exactly four digits.', 'BANK_CODE_INVALID_FORMAT');
   }
-  const cleaned = cleanString(code);
-  return Boolean(CBSL_BANKS[cleaned]);
+  const bank = getBankByCode(normalized);
+  return bank
+    ? createSuccess(bank)
+    : createFailure(
+        'CBSL bank code is not in the bundled reference data.',
+        'BANK_CODE_UNSUPPORTED',
+      );
 }
 
 /**
@@ -22,14 +34,16 @@ export function getBankByCode(code: unknown): BankInfo | null {
     code = padZero(code, 4);
   }
   const cleaned = cleanString(code);
-  return CBSL_BANKS[cleaned] ?? null;
+  return /^[0-9]{4}$/.test(cleaned) && Object.hasOwn(CBSL_BANKS, cleaned)
+    ? { ...CBSL_BANKS[cleaned]! }
+    : null;
 }
 
 /**
  * Returns the list of all CBSL recognized banks.
  */
 export function getBankList(): BankInfo[] {
-  return Object.values(CBSL_BANKS);
+  return Object.values(CBSL_BANKS).map((bank) => ({ ...bank }));
 }
 
 /**
@@ -48,7 +62,7 @@ export function isValidBranchCode(code: unknown): boolean {
  * Must be numeric and between 6 to 18 digits.
  */
 export function isValidBankAccountNumber(acc: unknown): boolean {
-  const cleaned = cleanString(acc).replace(/[\s\-]/g, '');
+  const cleaned = cleanString(acc).replace(/[\s-]/g, '');
   return /^\d{6,18}$/.test(cleaned);
 }
 
@@ -58,9 +72,13 @@ export function isValidBankAccountNumber(acc: unknown): boolean {
 export function validateBankAccount(
   acc: unknown,
   bankCode?: unknown,
-  branchCode?: unknown
-): ValidationResult<{ account: string; bank?: BankInfo; branchCode?: string }> {
-  const cleaned = cleanString(acc).replace(/[\s\-]/g, '');
+  branchCode?: unknown,
+): ValidationResult<{
+  account: string;
+  bank?: BankInfo | undefined;
+  branchCode?: string | undefined;
+}> {
+  const cleaned = cleanString(acc).replace(/[\s-]/g, '');
 
   if (!cleaned) {
     return createFailure('Bank account number is required.', 'BANK_ACC_REQUIRED');
@@ -69,7 +87,7 @@ export function validateBankAccount(
   if (!/^\d{6,18}$/.test(cleaned)) {
     return createFailure(
       'Invalid bank account number format. Expected 6 to 18 digits.',
-      'BANK_ACC_INVALID'
+      'BANK_ACC_INVALID',
     );
   }
 
@@ -77,10 +95,7 @@ export function validateBankAccount(
   if (bankCode !== undefined && bankCode !== null && bankCode !== '') {
     const bankFound = getBankByCode(bankCode);
     if (!bankFound) {
-      return createFailure(
-        `Invalid CBSL bank code "${String(bankCode)}".`,
-        'BANK_CODE_INVALID'
-      );
+      return createFailure('Invalid CBSL bank code.', 'BANK_CODE_INVALID');
     }
     bank = bankFound;
   }
@@ -88,10 +103,7 @@ export function validateBankAccount(
   let branch: string | undefined;
   if (branchCode !== undefined && branchCode !== null && branchCode !== '') {
     if (!isValidBranchCode(branchCode)) {
-      return createFailure(
-        `Invalid branch code "${String(branchCode)}". Expected 3 digits.`,
-        'BRANCH_CODE_INVALID'
-      );
+      return createFailure('Invalid branch code. Expected 3 digits.', 'BRANCH_CODE_INVALID');
     }
     branch = typeof branchCode === 'number' ? padZero(branchCode, 3) : cleanString(branchCode);
   }
@@ -102,4 +114,3 @@ export function validateBankAccount(
     branchCode: branch,
   });
 }
-

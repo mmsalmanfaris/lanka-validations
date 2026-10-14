@@ -31,10 +31,9 @@ export function validateVehiclePlate(plate: unknown): ValidationResult<VehiclePl
   if (!info) {
     return createFailure(
       'Invalid Sri Lankan vehicle number plate. Expected format e.g. "WP CAB-1234", "CAB-1234", or "14 Sri 1234".',
-      'PLATE_INVALID'
+      'PLATE_INVALID',
     );
   }
 
   return createSuccess(info);
 }
-

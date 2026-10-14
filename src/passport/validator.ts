@@ -23,10 +23,9 @@ export function validatePassport(passport: unknown): ValidationResult<PassportIn
   if (!info) {
     return createFailure(
       'Invalid Sri Lankan passport number. Example format: N1234567 or P1234567.',
-      'PASSPORT_INVALID'
+      'PASSPORT_INVALID',
     );
   }
 
   return createSuccess(info);
 }
-

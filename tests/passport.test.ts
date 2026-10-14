@@ -42,4 +42,3 @@ describe('Passport Module', () => {
     expect(validatePassport('').code).toBe('PASSPORT_REQUIRED');
   });
 });
-

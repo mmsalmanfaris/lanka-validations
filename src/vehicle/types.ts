@@ -1,9 +1,7 @@
-export type VehiclePlateEra =
-  | 'modern'
-  | 'modern_numeric'
-  | 'sri_series'
-  | 'vintage';
+/** Plate numbering scheme: current letter series (`'modern'`), numeric series (`'modern_numeric'`), the 1956-2000 'Sri' series, or pre-1956 vintage plates. */
+export type VehiclePlateEra = 'modern' | 'modern_numeric' | 'sri_series' | 'vintage';
 
+/** Details of a valid vehicle registration plate, returned by {@link parseVehiclePlate}. */
 export interface VehiclePlateInfo {
   /** Cleaned plate string */
   plate: string;
@@ -20,4 +18,3 @@ export interface VehiclePlateInfo {
   /** Standardized pretty format (e.g. 'WP CAB-1234') */
   formatted: string;
 }
-

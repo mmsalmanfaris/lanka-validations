@@ -1,0 +1,22 @@
+name: Feature request
+description: Suggest a new validator, option, or format.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to validate or parse, and why can't you do it today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API
+      render: ts
+      placeholder: validateBusinessRegistration('PV 12345');
+  - type: input
+    id: source
+    attributes:
+      label: Official specification
+      description: Link to the authority that defines the format, if one exists.

@@ -41,3 +41,11 @@ export * from './administrative';
 // Schema & Form Validator Builder
 export * from './schema';
 
+// Privacy-safe display and logging helpers
+export * from './privacy';
+
+// Localized validation messages with stable codes
+export * from './i18n';
+
+// Versioned provenance and coverage for bundled reference tables
+export * from './reference-data';

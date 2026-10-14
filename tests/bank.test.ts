@@ -49,4 +49,3 @@ describe('Bank Module', () => {
     expect(res.data?.branchCode).toBe('001');
   });
 });
-

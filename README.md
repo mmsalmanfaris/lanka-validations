@@ -3,12 +3,12 @@
 High-performance, zero-dependency Sri Lankan data validation and parsing library for TypeScript and JavaScript.  
 (Sri Lanka Data Validations / ශ්‍රී ලංකා දත්ත වලංගුකරණය / இலங்கை தரவு சரிபார்ப்பு)
 
-[![npm version](https://img.shields.io/badge/npm-v1.0.0-blue.svg)](https://www.npmjs.com/package/lanka-validations)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-88%20Passed-brightgreen.svg)]()
-[![Dependencies](https://img.shields.io/badge/Dependencies-0-success.svg)]()
-[![Bundle Size](https://img.shields.io/badge/Bundle-Tree--Shakeable-teal.svg)]()
+[![npm version](https://img.shields.io/npm/v/lanka-validations.svg)](https://www.npmjs.com/package/lanka-validations)
+[![CI](https://github.com/mmsalmanfaris/lanka-validations/actions/workflows/ci.yml/badge.svg)](https://github.com/mmsalmanfaris/lanka-validations/actions/workflows/ci.yml)
+[![Bundle size](https://img.shields.io/bundlejs/size/lanka-validations)](https://bundlejs.com/?q=lanka-validations)
+[![Types](https://img.shields.io/npm/types/lanka-validations.svg)](https://www.npmjs.com/package/lanka-validations)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/mmsalmanfaris/lanka-validations/badge)](https://scorecard.dev/viewer/?uri=github.com/mmsalmanfaris/lanka-validations)
+[![License: MIT](https://img.shields.io/npm/l/lanka-validations.svg)](LICENSE)
 
 `lanka-validations` is an open-source validation library tailored specifically for Sri Lankan business systems, KYC user onboarding, financial apps, mobile applications, and web forms.
 
@@ -18,6 +18,8 @@ High-performance, zero-dependency Sri Lankan data validation and parsing library
 
 - [Overview](#overview)
 - [Key Capabilities](#key-capabilities)
+- [What Validation Means](#what-validation-means)
+- [Data Sources](#data-sources)
 - [Installation](#installation)
 - [Import Styles](#import-styles)
 - [Quick Guide by Validator](#quick-guide-by-validator)
@@ -51,11 +53,44 @@ Software built for Sri Lanka frequently requires validating local document numbe
 ## Key Capabilities
 
 - **Zero Runtime Dependencies**: Written entirely in pure, standard JavaScript and TypeScript.
-- **Full Sri Lankan Format Support**: Verified against specifications from the Department of Registration of Persons (DRP), TRCSL, CBSL, DMT, and IRD.
+- **Sri Lankan Format Support**: Rules and reference tables are based on published DRP, TRCSL, CBSL, DMT, Sri Lanka Post, and IRD material; see [Data sources](#data-sources) for each table's source, as-of date, and known limits.
 - **Trilingual Conversion**: Handles English, Sinhala, and Tamil for currency words, gender normalization, and administrative regions.
 - **Bidirectional NIC Conversion**: Converts smoothly between Old (9-digit + V/X) and New (12-digit) NIC numbers.
 - **Cross-Field KYC Integrity**: Checks if a submitted Date of Birth and Gender match the embedded data in a National Identity Card.
 - **Modular and Tree-Shakeable**: Import only the validators you need using subpath exports.
+
+---
+
+## What Validation Means
+
+These validators check that a value is **well-formed** and consistent with the rules and reference tables listed under [Data sources](#data-sources). They do **not** check that the value exists or belongs to anyone:
+
+- A valid NIC, passport, or driving licence number may never have been issued, or may belong to someone else.
+- A valid phone number may be unassigned or disconnected; the operator shown is the prefix's original allocation, not the current network after number porting.
+- A valid bank code and account number do not prove that the account exists or is open.
+- A valid TIN or VAT number does not prove IRD registration.
+- NIC check digits are not verified, because DRP has not published the algorithm.
+
+For KYC or payments, treat these checks as input hygiene and confirm identity, accounts, and registrations with the issuing authority or a verification provider.
+
+---
+
+## Data Sources
+
+Reference tables are bundled at build time and do not update on their own. `getReferenceDataMetadata()` returns this information at runtime, including the limitations of each table.
+
+| Table | Source | As of | Coverage |
+| --- | --- | --- | --- |
+| Provinces, districts | [Department of Census and Statistics: Census of Population and Housing 2024 preliminary report](https://www.statistics.gov.lk/Resource/en/Population/CPH_2024/Preliminary_Report.pdf) | 2026-10-12 | All 9 provinces and 25 districts, in English, Sinhala, and Tamil |
+| CBSL bank codes | [Central Bank of Sri Lanka: ITRS Bank Reference Manual](https://www.cbsl.gov.lk/sites/default/files/cbslweb_documents/about/ITRS_bank_reference_manual_e.pdf) | 2026-10-12 | Institution codes included by this package; verify routing-critical use against current CBSL publications |
+| Postal codes | [Sri Lanka Post: Post Code Book (2022)](https://www.slpost.gov.lk/wp-content/uploads/2022/11/POST-CODE-BOOK-.pdf) | 2026-10-12 | Two-digit prefixes mapped to districts, plus selected major cities; not every delivery office |
+| Mobile prefixes, area codes, short codes | [TRCSL: National Numbering Plan](https://www.trc.gov.lk/pages_e.php?id=121) | 2026-10-12 | Known prefixes and a curated subset of short codes; an unrecognised prefix is not proof a number is unassigned |
+| Driving licence classes | [Department of Motor Traffic: Driving licence vehicle classes](https://dmt.gov.lk/index.php?Itemid=163&id=46&lang=ta&option=com_content&view=article) | 2026-10-12 | DMT classes, descriptions, and minimum ages used by this package |
+| Vehicle plate provinces | [Department of Motor Traffic: Vehicle Information Service](https://eservices.motortraffic.gov.lk/VehicleInfo/home) | 2026-10-12 | Nine province prefixes; historical plate formats are best-effort |
+| NIC format | Public DRP guidance; no official specification found | — | Old (9 digits + V/X) and new (12 digits) formats. Day-of-year uses the 366-day convention; day 060 in a common year maps to 28 February pending DRP confirmation |
+| TIN / VAT | [IRD: Taxpayer registration guidelines](https://www.ird.gov.lk/en/Shared%20Documents/TPR_Guidelines_1.1_E.pdf) | 2026-10-14 | Digit-pattern checks only; an NIC is not accepted as a TIN |
+
+Found an outdated entry? Please [open an issue](https://github.com/mmsalmanfaris/lanka-validations/issues) with a link to the current official source.
 
 ---
 
@@ -363,7 +398,7 @@ Validates Taxpayer Identification Numbers issued by the Inland Revenue Departmen
 import { isValidTIN, isValidVAT } from 'lanka-validations/tax';
 
 isValidTIN('123456789');      // true (9-digit IRD TIN)
-isValidTIN('921234567V');     // true (Individual NIC as TIN)
+isValidTIN('921234567V');     // false (an NIC is not a TIN)
 isValidVAT('123456789-7000'); // true (Standard IRD VAT number)
 ```
 
@@ -446,6 +481,8 @@ matchesNicGender('female', userNic); // false (Gender mismatch)
 
 ## API Reference
 
+Full generated documentation for every export: **https://mmsalmanfaris.github.io/lanka-validations/**
+
 | Module | Core Exports | Return Types |
 |---|---|---|
 | `nic` | `isValidNic`, `parseNic`, `convertOldToNewNic`, `convertNewToOldNic`, `formatNic` | `boolean`, `NicInfo`, `string` |
@@ -463,6 +500,113 @@ matchesNicGender('female', userNic); // false (Gender mismatch)
 | `schema` | `createSchemaValidator`, `rules` | `SchemaValidator`, `SchemaValidationResult` |
 
 ---
+
+## Input contracts and validation safety
+
+Scalar parsers and validators accept strings and finite numbers where their format
+matches. Objects, arrays, booleans, bigint, symbols, `NaN`, and infinities are
+rejected without calling user-defined string conversion. DOB functions additionally
+accept valid `Date` objects. Use strings for identifiers to preserve leading zeros
+and avoid JavaScript numeric precision loss. Strings are trimmed, and zero-width
+spaces/BOMs are removed by the common normalizer.
+Raw strings longer than `MAX_INPUT_LENGTH` (1024 UTF-16 code units) are rejected
+before trimming, case conversion, or separator removal. The limit includes whitespace
+and invisible characters; inputs are never truncated. This is a library resource
+limit, not an official identifier-length rule. DOB inputs are restricted as below.
+
+- Bank codes must normalize to four ASCII digits and belong to the bank table.
+- Postal codes accept one to five ASCII digits (or integers from 0 to 99999),
+  padded to five digits. Letters, embedded separators, and fractions are rejected.
+  Lookup still checks known ranges, not exact postal assignment.
+- Short codes must contain only their three or four digits after trimming.
+  `isValidPhone` includes short codes; use `isValidContactPhone` to exclude them,
+  or `isValidMobile` for mobile-only fields. Full numbers retain support for
+  spaces, hyphens, parentheses, dots, slashes, and a leading international `+`.
+- `parseLKR` accepts ungrouped, Western (`1,234,567`), and South Asian
+  (`12,34,567`) grouping. A single currency symbol may precede or follow the
+  amount. Negatives use a leading minus or enclosing parentheses. Malformed
+  grouping, embedded/repeated symbols, and non-finite results are rejected.
+  Magnitudes must not exceed exported `MAX_LKR_AMOUNT`
+  (`Number.MAX_SAFE_INTEGER / 100`). Parsing returns an approximate JavaScript
+  number without rounding fractional digits; it is not an exact decimal-money API.
+- `lkrToWords` rounds the number's shortest decimal representation to cents,
+  with ties away from zero, before splitting rupees and cents. This includes
+  carrying 100 cents into the next rupee. `includeCents: false` hides the cents
+  after rounding. Rounded magnitudes must be below 1 trillion rupees for English
+  and 1 billion for Sinhala/Tamil; invalid or unsupported amounts throw
+  `RangeError`. Existing Sinhala/Tamil vocabulary has not received a new
+  native-speaker review.
+- DOB age bounds must be non-negative integers with `minAge <= maxAge`, and a
+  supplied reference date must be valid. Invalid options return `false` from
+  `isValidDob`, `DOB_INVALID_OPTIONS` from `validateDob`, and an invalid age
+  reference returns `null` from `calculateAge`.
+- DOB strings must use exactly `YYYY-MM-DD`, `YYYY/MM/DD`, `DD-MM-YYYY`, or
+  `DD/MM/YYYY`, with two-digit months/days and consistent separators. Numbers,
+  timestamps, month names, and other `Date.parse` formats are rejected. Dates must
+  exist in the calendar. `Date` inputs use their **UTC calendar date**, are copied,
+  and normalized to UTC midnight. Age and future-date checks use UTC, independently
+  of the host time zone; a local midnight Date can represent the previous UTC day.
+- NIC parsing and boolean/detailed validation accept `{ referenceDate: Date }`
+  as an optional second argument. They use one UTC reference for both year and
+  age checks and reject future DOBs within the same year (`NIC_FUTURE_DOB`).
+  Invalid references produce `NIC_INVALID_OPTIONS` in detailed validation.
+  Converters accept the same option; `formatNic` accepts it as a third argument,
+  and `rules.nic(options)` supports it in schemas.
+- Bank, province, and district getters return independent mutable copies, including
+  province district arrays. Changing a returned record cannot affect subsequent
+  lookups. Exported `CBSL_BANKS`, `PROVINCES`, and `DISTRICTS` tables are deeply
+  frozen with readonly declaration types. Consumers that mutated these shared
+  exports must instead use getter copies; direct mutation now fails.
+- Schema validation accepts plain or null-prototype records. Invalid roots return
+  an error under `$root`. The `errors` dictionary has no prototype, so fields such
+  as `__proto__` work normally. Use `Object.hasOwn(errors, field)` instead of
+  `errors.hasOwnProperty(field)`. Rule exceptions still propagate to the caller.
+
+These checks validate supported formats and semantics, not identity, account
+ownership, or official registration. The stricter rejection rules and word-conversion
+range errors are intentional changes from earlier permissive behavior.
+
+The implementation follows [OWASP input-validation guidance](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html),
+[own-property lookup semantics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwn),
+and [finite-number checks](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite).
+
+**NIC day-60 research (12 October 2026):** the library retains its legacy mapping
+of day 60 to February 28 in non-leap years, and February 29 in leap years.
+The [DRP FAQ](https://drp.gov.lk/en/faq.php) explains conversion to 12-digit numbers
+but does not establish this day-of-year rule. Targeted DRP searches did not find
+an authoritative rule. Tests preserve compatibility; they do not certify that
+mapping as official. No leap-day policy change has been made without that evidence.
+
+## Performance benchmarks
+
+Run `npm run benchmark` after a production build. The dependency-free harness uses
+Node's high-resolution `performance.now()` clock, warms each operation, reports the
+median of repeated samples, exercises CJS and ESM, includes valid/invalid/oversized
+and mixed inputs, measures cold imports in isolated Node processes, and reports a
+post-GC retained-heap estimate. Set `BENCHMARK_BASELINE=/absolute/path/to/dist` to
+compare another build. `BENCHMARK_WARMUP`, `BENCHMARK_ITERATIONS`,
+`BENCHMARK_SAMPLES`, and `BENCHMARK_COLD_SAMPLES` control the workload.
+
+The 12 October 2026 comparison on Node 25.4.0 used 20,000 warm-up calls and repeated
+medians of 200,000 calls for focused hot-operation checks. Precomputed trilingual
+administrative indexes changed last-district lookup from 3.04 to 0.13 µs/op in CJS
+(23×) and 3.08 to 0.10 µs/op in ESM (32×). Missing-district lookup changed from
+3.41 to 0.08 µs/op in CJS (41×) and 3.29 to 0.05 µs/op in ESM (60×). Successful
+detailed NIC validation improved about 1.2–1.3× and phone validation about 1.1–1.2×
+after eliminating duplicate normalization on their success paths. These are local
+synthetic measurements, not production guarantees or release gates.
+
+Tree-shaking was rechecked with esbuild after adding the indexes. Importing only
+`isValidNic` produced a 969-byte gzip bundle from the root entry and 967 bytes from
+the `/nic` entry; the administrative index was absent from both. The unminified CJS
+root grew by 218 bytes and the administrative entry by 308 bytes relative to the
+saved pre-index build.
+
+The indexes contain only public administrative aliases. They do not cache supplied
+NICs, phone numbers, or other personal identifiers. All code paths preserve the
+existing detached-copy behavior of lookup results. The benchmark implementation uses
+[Node's performance clock](https://nodejs.org/api/perf_hooks.html) and
+[memory-usage API](https://nodejs.org/api/process.html#processmemoryusage).
 
 ## Contributing
 
