@@ -21,9 +21,8 @@ export default defineConfig({
     'src/reference-data/index.ts',
   ],
   format: ['cjs', 'esm'],
-  dts: false,
+  dts: true,
   clean: true,
-  sourcemap: false,
+  sourcemap: true,
   minify: false,
 });
-

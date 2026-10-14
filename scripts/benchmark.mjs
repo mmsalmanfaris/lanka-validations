@@ -75,9 +75,10 @@ function memoryAfterWork(api) {
 
 function coldImport(file, format) {
   const target = format === 'esm' ? pathToFileURL(file).href : file;
-  const source = format === 'esm'
-    ? `const {performance}=await import('node:perf_hooks');const s=performance.now();await import(${JSON.stringify(target)});console.log(performance.now()-s)`
-    : `const {performance}=require('node:perf_hooks');const s=performance.now();require(${JSON.stringify(target)});console.log(performance.now()-s)`;
+  const source =
+    format === 'esm'
+      ? `const {performance}=await import('node:perf_hooks');const s=performance.now();await import(${JSON.stringify(target)});console.log(performance.now()-s)`
+      : `const {performance}=require('node:perf_hooks');const s=performance.now();require(${JSON.stringify(target)});console.log(performance.now()-s)`;
   const timings = [];
   for (let i = 0; i < coldSamples; i++) {
     const args = format === 'esm' ? ['--input-type=module', '-e', source] : ['-e', source];
@@ -103,19 +104,37 @@ async function runBuild(label, distDir) {
   const rows = [];
   for (const format of ['cjs', 'esm']) {
     for (const [name, operation] of operations(api[format])) {
-      rows.push({ build: label, format: format.toUpperCase(), operation: name,
-        'median µs/op': Number(measure(operation).toFixed(4)) });
+      rows.push({
+        build: label,
+        format: format.toUpperCase(),
+        operation: name,
+        'median µs/op': Number(measure(operation).toFixed(4)),
+      });
     }
   }
   console.table(rows);
   console.table([
-    { build: label, format: 'CJS', 'cold import median ms': Number(coldImport(path.join(distDir, 'index.js'), 'cjs').toFixed(3)) },
-    { build: label, format: 'ESM', 'cold import median ms': Number(coldImport(path.join(distDir, 'index.mjs'), 'esm').toFixed(3)) },
+    {
+      build: label,
+      format: 'CJS',
+      'cold import median ms': Number(coldImport(path.join(distDir, 'index.js'), 'cjs').toFixed(3)),
+    },
+    {
+      build: label,
+      format: 'ESM',
+      'cold import median ms': Number(
+        coldImport(path.join(distDir, 'index.mjs'), 'esm').toFixed(3),
+      ),
+    },
   ]);
-  console.log(`${label} retained heap estimate after mixed workload: ${memoryAfterWork(api.cjs)} bytes`);
+  console.log(
+    `${label} retained heap estimate after mixed workload: ${memoryAfterWork(api.cjs)} bytes`,
+  );
 }
 
-console.log(`Node ${process.version}; warmup=${warmup}; iterations=${iterations}; samples=${samples}`);
+console.log(
+  `Node ${process.version}; warmup=${warmup}; iterations=${iterations}; samples=${samples}`,
+);
 if (!globalThis.gc) console.log('Run with --expose-gc for the retained-heap estimate.');
 const baseline = process.env.BENCHMARK_BASELINE;
 if (baseline) await runBuild('baseline', path.resolve(baseline));

@@ -2,95 +2,234 @@
   "name": "lanka-validations",
   "version": "2.0.0",
   "description": "High-performance, zero-dependency Sri Lankan data validation library for TypeScript and JavaScript. Validate and parse Sri Lankan National Identity Card (NIC), phone numbers, passport, driving license, vehicle number plates, LKR currency, date of birth (DOB), gender, postal codes, CBSL bank codes, and TIN.",
+  "type": "commonjs",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "nic": [
+        "./dist/nic/index.d.ts"
+      ],
+      "phone": [
+        "./dist/phone/index.d.ts"
+      ],
+      "passport": [
+        "./dist/passport/index.d.ts"
+      ],
+      "license": [
+        "./dist/license/index.d.ts"
+      ],
+      "vehicle": [
+        "./dist/vehicle/index.d.ts"
+      ],
+      "currency": [
+        "./dist/currency/index.d.ts"
+      ],
+      "dob": [
+        "./dist/dob/index.d.ts"
+      ],
+      "gender": [
+        "./dist/gender/index.d.ts"
+      ],
+      "postal-code": [
+        "./dist/postal-code/index.d.ts"
+      ],
+      "bank": [
+        "./dist/bank/index.d.ts"
+      ],
+      "tax": [
+        "./dist/tax/index.d.ts"
+      ],
+      "administrative": [
+        "./dist/administrative/index.d.ts"
+      ],
+      "schema": [
+        "./dist/schema/index.d.ts"
+      ],
+      "privacy": [
+        "./dist/privacy/index.d.ts"
+      ],
+      "i18n": [
+        "./dist/i18n/index.d.ts"
+      ],
+      "reference-data": [
+        "./dist/reference-data/index.d.ts"
+      ]
+    }
+  },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     },
     "./nic": {
-      "types": "./dist/nic/index.d.ts",
-      "import": "./dist/nic/index.mjs",
-      "require": "./dist/nic/index.js"
+      "import": {
+        "types": "./dist/nic/index.d.mts",
+        "default": "./dist/nic/index.mjs"
+      },
+      "require": {
+        "types": "./dist/nic/index.d.ts",
+        "default": "./dist/nic/index.js"
+      }
     },
     "./phone": {
-      "types": "./dist/phone/index.d.ts",
-      "import": "./dist/phone/index.mjs",
-      "require": "./dist/phone/index.js"
+      "import": {
+        "types": "./dist/phone/index.d.mts",
+        "default": "./dist/phone/index.mjs"
+      },
+      "require": {
+        "types": "./dist/phone/index.d.ts",
+        "default": "./dist/phone/index.js"
+      }
     },
     "./passport": {
-      "types": "./dist/passport/index.d.ts",
-      "import": "./dist/passport/index.mjs",
-      "require": "./dist/passport/index.js"
+      "import": {
+        "types": "./dist/passport/index.d.mts",
+        "default": "./dist/passport/index.mjs"
+      },
+      "require": {
+        "types": "./dist/passport/index.d.ts",
+        "default": "./dist/passport/index.js"
+      }
     },
     "./license": {
-      "types": "./dist/license/index.d.ts",
-      "import": "./dist/license/index.mjs",
-      "require": "./dist/license/index.js"
+      "import": {
+        "types": "./dist/license/index.d.mts",
+        "default": "./dist/license/index.mjs"
+      },
+      "require": {
+        "types": "./dist/license/index.d.ts",
+        "default": "./dist/license/index.js"
+      }
     },
     "./vehicle": {
-      "types": "./dist/vehicle/index.d.ts",
-      "import": "./dist/vehicle/index.mjs",
-      "require": "./dist/vehicle/index.js"
+      "import": {
+        "types": "./dist/vehicle/index.d.mts",
+        "default": "./dist/vehicle/index.mjs"
+      },
+      "require": {
+        "types": "./dist/vehicle/index.d.ts",
+        "default": "./dist/vehicle/index.js"
+      }
     },
     "./currency": {
-      "types": "./dist/currency/index.d.ts",
-      "import": "./dist/currency/index.mjs",
-      "require": "./dist/currency/index.js"
+      "import": {
+        "types": "./dist/currency/index.d.mts",
+        "default": "./dist/currency/index.mjs"
+      },
+      "require": {
+        "types": "./dist/currency/index.d.ts",
+        "default": "./dist/currency/index.js"
+      }
     },
     "./dob": {
-      "types": "./dist/dob/index.d.ts",
-      "import": "./dist/dob/index.mjs",
-      "require": "./dist/dob/index.js"
+      "import": {
+        "types": "./dist/dob/index.d.mts",
+        "default": "./dist/dob/index.mjs"
+      },
+      "require": {
+        "types": "./dist/dob/index.d.ts",
+        "default": "./dist/dob/index.js"
+      }
     },
     "./gender": {
-      "types": "./dist/gender/index.d.ts",
-      "import": "./dist/gender/index.mjs",
-      "require": "./dist/gender/index.js"
+      "import": {
+        "types": "./dist/gender/index.d.mts",
+        "default": "./dist/gender/index.mjs"
+      },
+      "require": {
+        "types": "./dist/gender/index.d.ts",
+        "default": "./dist/gender/index.js"
+      }
     },
     "./postal-code": {
-      "types": "./dist/postal-code/index.d.ts",
-      "import": "./dist/postal-code/index.mjs",
-      "require": "./dist/postal-code/index.js"
+      "import": {
+        "types": "./dist/postal-code/index.d.mts",
+        "default": "./dist/postal-code/index.mjs"
+      },
+      "require": {
+        "types": "./dist/postal-code/index.d.ts",
+        "default": "./dist/postal-code/index.js"
+      }
     },
     "./bank": {
-      "types": "./dist/bank/index.d.ts",
-      "import": "./dist/bank/index.mjs",
-      "require": "./dist/bank/index.js"
+      "import": {
+        "types": "./dist/bank/index.d.mts",
+        "default": "./dist/bank/index.mjs"
+      },
+      "require": {
+        "types": "./dist/bank/index.d.ts",
+        "default": "./dist/bank/index.js"
+      }
     },
     "./tax": {
-      "types": "./dist/tax/index.d.ts",
-      "import": "./dist/tax/index.mjs",
-      "require": "./dist/tax/index.js"
+      "import": {
+        "types": "./dist/tax/index.d.mts",
+        "default": "./dist/tax/index.mjs"
+      },
+      "require": {
+        "types": "./dist/tax/index.d.ts",
+        "default": "./dist/tax/index.js"
+      }
     },
     "./administrative": {
-      "types": "./dist/administrative/index.d.ts",
-      "import": "./dist/administrative/index.mjs",
-      "require": "./dist/administrative/index.js"
+      "import": {
+        "types": "./dist/administrative/index.d.mts",
+        "default": "./dist/administrative/index.mjs"
+      },
+      "require": {
+        "types": "./dist/administrative/index.d.ts",
+        "default": "./dist/administrative/index.js"
+      }
     },
     "./schema": {
-      "types": "./dist/schema/index.d.ts",
-      "import": "./dist/schema/index.mjs",
-      "require": "./dist/schema/index.js"
+      "import": {
+        "types": "./dist/schema/index.d.mts",
+        "default": "./dist/schema/index.mjs"
+      },
+      "require": {
+        "types": "./dist/schema/index.d.ts",
+        "default": "./dist/schema/index.js"
+      }
     },
     "./privacy": {
-      "types": "./dist/privacy/index.d.ts",
-      "import": "./dist/privacy/index.mjs",
-      "require": "./dist/privacy/index.js"
+      "import": {
+        "types": "./dist/privacy/index.d.mts",
+        "default": "./dist/privacy/index.mjs"
+      },
+      "require": {
+        "types": "./dist/privacy/index.d.ts",
+        "default": "./dist/privacy/index.js"
+      }
     },
     "./i18n": {
-      "types": "./dist/i18n/index.d.ts",
-      "import": "./dist/i18n/index.mjs",
-      "require": "./dist/i18n/index.js"
+      "import": {
+        "types": "./dist/i18n/index.d.mts",
+        "default": "./dist/i18n/index.mjs"
+      },
+      "require": {
+        "types": "./dist/i18n/index.d.ts",
+        "default": "./dist/i18n/index.js"
+      }
     },
     "./reference-data": {
-      "types": "./dist/reference-data/index.d.ts",
-      "import": "./dist/reference-data/index.mjs",
-      "require": "./dist/reference-data/index.js"
-    }
+      "import": {
+        "types": "./dist/reference-data/index.d.mts",
+        "default": "./dist/reference-data/index.mjs"
+      },
+      "require": {
+        "types": "./dist/reference-data/index.d.ts",
+        "default": "./dist/reference-data/index.js"
+      }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
@@ -101,13 +240,20 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "tsup && tsc --declaration --emitDeclarationOnly",
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "lint:package": "npm run build && publint --strict && attw --pack .",
+    "size": "npm run build && size-limit",
+    "docs": "typedoc",
     "benchmark": "npm run build && node --expose-gc scripts/benchmark.mjs",
     "check:package": "npm run build && node scripts/check-package.mjs",
-    "prepublishOnly": "npm run build && npm run test && node scripts/check-package.mjs"
+    "prepublishOnly": "npm run typecheck && npm run lint && npm run test:coverage && npm run lint:package && node scripts/check-package.mjs"
   },
   "repository": {
     "type": "git",
@@ -152,9 +298,22 @@
   "author": "M.M. Salman Faris <mmsalmanfaris@outlook.com>",
   "license": "MIT",
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@eslint/js": "^10.0.1",
+    "@size-limit/preset-small-lib": "^14.2.0",
     "@types/node": "^22.13.1",
+    "@vitest/coverage-v8": "^4.1.11",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "fast-check": "^4.10.2",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "publint": "^0.3.25",
+    "size-limit": "^14.2.0",
     "tsup": "^8.3.6",
+    "typedoc": "^0.28.20",
     "typescript": "^5.7.3",
+    "typescript-eslint": "^8.71.2",
     "vitest": "^4.1.11"
   },
   "overrides": {
