@@ -14,6 +14,17 @@ export interface LkrValidationOptions {
 
 /**
  * Validates whether the given value is a valid Sri Lankan currency amount.
+ *
+ * @param input - Amount as a number or text.
+ * @param options - Optional `{ min, max, allowNegative }`. Bounds are inclusive; negatives are rejected by default.
+ * @returns `true` if the amount parses and is within the bounds.
+ *
+ * @example
+ * ```ts
+ * isValidLKR('Rs. 1,500.00'); // true
+ * isValidLKR(-10); // false
+ * isValidLKR(250, { min: 500 }); // false
+ * ```
  */
 export function isValidLKR(input: unknown, options?: LkrValidationOptions): boolean {
   const num = parseLKR(input);
@@ -34,6 +45,16 @@ export function isValidLKR(input: unknown, options?: LkrValidationOptions): bool
 
 /**
  * Validates a Sri Lankan currency amount and returns detailed ValidationResult.
+ *
+ * @param input - Amount as a number or text.
+ * @param options - Optional `{ min, max, allowNegative }`.
+ * @returns `{ isValid: true, data }` with the amount as a number, or `{ isValid: false, error, errors, code }`.
+ *
+ * @example
+ * ```ts
+ * validateLKR('Rs. 1,500.00').isValid; // true
+ * validateLKR(250, { min: 500 }).code; // 'CURRENCY_BELOW_MIN'
+ * ```
  */
 export function validateLKR(
   input: unknown,

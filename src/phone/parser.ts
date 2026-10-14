@@ -9,6 +9,15 @@ import type { PhoneInfo } from './types';
 
 /**
  * Normalizes any Sri Lankan phone number string into a clean 10-digit national number (e.g., '0771234567').
+ *
+ * @param raw - Phone number in any common format.
+ * @returns The national form with a leading 0 and no separators, or `''` if the input contains other characters.
+ *
+ * @example
+ * ```ts
+ * normalizePhoneNumber('+94 77 123 4567'); // '0771234567'
+ * normalizePhoneNumber('(011) 234-5678'); // '0112345678'
+ * ```
  */
 export function normalizePhoneNumber(raw: unknown): string {
   let cleaned = cleanString(raw).replace(/[\s\-()./]/g, '');
@@ -30,6 +39,16 @@ export function normalizePhoneNumber(raw: unknown): string {
 /**
  * Parses and inspects a Sri Lankan phone number (mobile, landline, or short code).
  * Returns PhoneInfo if valid, or null if invalid.
+ *
+ * @param rawPhone - Phone number in any common format. Strings and finite numbers are accepted; other types return a failure without throwing.
+ * @returns Number type, formats, prefix, area, and originally allocated operator, or `null` if invalid.
+ *
+ * @example
+ * ```ts
+ * parsePhone('0771234567')?.type; // 'mobile'
+ * parsePhone('0771234567')?.international; // '+94 77 123 4567'
+ * parsePhone('0112345678')?.areaName; // 'Colombo'
+ * ```
  */
 export function parsePhone(rawPhone: unknown): PhoneInfo | null {
   const raw = cleanString(rawPhone);

@@ -1,7 +1,7 @@
 import { deepFreeze } from '../common/freeze';
 import type { MobileOperator, ShortCodeInfo } from './types';
 
-/** Mobile prefixes (for example `'077'`) mapped to their originally allocated operator. Source: TRCSL numbering plan; see {@link getReferenceDataMetadata}. */
+/** Mobile prefixes (for example `'077'`) mapped to their originally allocated operator. Source: TRCSL numbering plan; see `getReferenceDataMetadata`. */
 export const MOBILE_PREFIXES: Readonly<Record<string, MobileOperator>> = {
   '070': 'Mobitel',
   '071': 'Mobitel',

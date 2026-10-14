@@ -5,6 +5,15 @@ import type { PassportInfo, PassportType } from './types';
  * Parses a Sri Lankan passport number.
  * Standard MRP: 1 letter (N, M, L, D, O) + 7 digits (e.g. N1234567)
  * E-Passport: 1-2 letters + 7-8 digits (e.g. P1234567, PA1234567)
+ *
+ * @param rawPassport - Passport number. Strings and finite numbers are accepted; other types return a failure without throwing.
+ * @returns Series prefix, digits, and inferred type, or `null` if the format is invalid.
+ *
+ * @example
+ * ```ts
+ * parsePassport('N1234567')?.type; // 'ordinary'
+ * parsePassport('D1234567')?.type; // 'diplomatic'
+ * ```
  */
 export function parsePassport(rawPassport: unknown): PassportInfo | null {
   const cleaned = cleanString(rawPassport).toUpperCase().replace(/[\s-]/g, '');

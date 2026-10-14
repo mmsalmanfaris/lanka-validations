@@ -30,7 +30,18 @@ function formatAbsoluteMinorUnits(value: bigint): string {
   return `${digits.slice(0, -2)}.${digits.slice(-2)}`;
 }
 
-/** Formats an exact cents value as an ungrouped decimal string. */
+/**
+ *  Formats an exact cents value as an ungrouped decimal string.
+ *
+ * @param minorUnits - Exact amount in cents.
+ * @returns The amount as an ungrouped decimal string without a symbol.
+ *
+ * @example
+ * ```ts
+ * formatLKRMinorUnits(125050n); // '1250.50'
+ * formatLKRMinorUnits(-5n); // '-0.05'
+ * ```
+ */
 export function formatLKRMinorUnits(minorUnits: bigint): string {
   const negative = minorUnits < 0n;
   const absolute = negative ? -minorUnits : minorUnits;
@@ -40,6 +51,16 @@ export function formatLKRMinorUnits(minorUnits: bigint): string {
 /**
  * Parses a decimal string into exact cents. Numbers are intentionally rejected
  * because they may already have lost decimal precision.
+ *
+ * @param input - Amount as a decimal string. Numbers are rejected because they may already have lost precision.
+ * @param options - Optional `allowNegative`, `excessDecimals` (`'reject'`, `'round'`, `'truncate'`), and `maxMinorUnits`.
+ * @returns `{ isValid: true, data }` with `{ minorUnits, decimal }`, or `{ isValid: false, error, errors, code }`.
+ *
+ * @example
+ * ```ts
+ * validateLKRDecimal('1,250.50').isValid; // true
+ * validateLKRDecimal('1.005').code; // 'CURRENCY_EXCESS_DECIMALS'
+ * ```
  */
 export function validateLKRDecimal(
   input: unknown,
@@ -96,7 +117,19 @@ export function validateLKRDecimal(
   return createSuccess({ minorUnits, decimal: formatLKRMinorUnits(minorUnits) });
 }
 
-/** Returns exact cents, or null when the decimal string is invalid. */
+/**
+ *  Returns exact cents, or null when the decimal string is invalid.
+ *
+ * @param input - Amount as a decimal string.
+ * @param options - Same options as `validateLKRDecimal`.
+ * @returns The exact amount in cents as a `bigint`, or `null` if invalid.
+ *
+ * @example
+ * ```ts
+ * parseLKRMinorUnits('1250.50'); // 125050n
+ * parseLKRMinorUnits('1.005', { excessDecimals: 'round' }); // 101n
+ * ```
+ */
 export function parseLKRMinorUnits(input: unknown, options?: LkrDecimalOptions): bigint | null {
   const result = validateLKRDecimal(input, options);
   return result.isValid ? result.data.minorUnits : null;

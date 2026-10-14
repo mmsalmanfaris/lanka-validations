@@ -34,11 +34,17 @@ function formatSouthAsianNumber(val: number, decimals: number): string {
 /**
  * Formats a number as Sri Lankan Rupee currency string.
  *
- * Examples:
- * - formatLKR(1500) -> 'Rs. 1,500.00'
- * - formatLKR(1500, { symbol: 'LKR' }) -> 'LKR 1,500.00'
- * - formatLKR(1500000, { lakhScale: true }) -> 'Rs. 15,00,000.00'
- * - formatLKR(250, { symbol: 'රු.' }) -> 'රු. 250.00'
+ * @param amount - Amount in rupees.
+ * @param options - Optional symbol, symbol position, decimals, grouping, and `lakhScale` for South Asian grouping.
+ * @returns The formatted amount.
+ *
+ * @example
+ * ```ts
+ * formatLKR(1500); // 'Rs. 1,500.00'
+ * formatLKR(1500000, { lakhScale: true }); // 'Rs. 15,00,000.00'
+ * formatLKR(1500, { symbol: 'LKR' }); // 'LKR 1,500.00'
+ * formatLKR(250, { symbol: 'රු.' }); // 'රු. 250.00'
+ * ```
  */
 export function formatLKR(amount: number, options?: FormatLkrOptions): string {
   const symbol = options?.symbol !== undefined ? options.symbol : 'Rs. ';

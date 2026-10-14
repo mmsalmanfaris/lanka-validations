@@ -311,11 +311,16 @@ function tamilIntegerToWords(n: number): string {
 /**
  * Converts a Sri Lankan Rupee amount into words in English, Sinhala, or Tamil.
  *
- * Examples:
- * - lkrToWords(1500) -> "One Thousand Five Hundred Rupees Only"
- * - lkrToWords(1500.50) -> "One Thousand Five Hundred Rupees and Fifty Cents Only"
- * - lkrToWords(1500, { language: 'si' }) -> "රුපියල් එක්දහස් පන්සියයයි"
- * - lkrToWords(1500, { language: 'ta' }) -> "ஆயிரத்து ஐந்நூறு ரூபாய்"
+ * @param amount - Amount in rupees. Rounded to cents first.
+ * @param options - Optional `language` (`'en'`, `'si'`, `'ta'`), `includeCents`, and `suffix`.
+ * @returns The amount in words. Throws `RangeError` for non-finite amounts or amounts of 1 trillion rupees or more (1 billion in Sinhala and Tamil).
+ *
+ * @example
+ * ```ts
+ * lkrToWords(1250.5); // 'One Thousand Two Hundred Fifty Rupees and Fifty Cents Only'
+ * lkrToWords(1250, { language: 'si' }); // 'රුපියල් එක්දහස් දෙසිය පනහයි'
+ * lkrToWords(1250, { language: 'ta' }); // 'ஆயிரத்து இருநூற்று ஐம்பது ரூபாய்'
+ * ```
  */
 export function lkrToWords(amount: number, options?: WordsOptions): string {
   const lang = options?.language ?? 'en';

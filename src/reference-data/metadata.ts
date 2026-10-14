@@ -129,8 +129,29 @@ export const REFERENCE_DATA_METADATA: Readonly<Record<ReferenceTableId, Referenc
     ),
   });
 
-/** Returns detached metadata so callers cannot mutate shared reference state. */
+/**
+ * Returns the source, as-of date, coverage, and limitations of one bundled reference table, as a copy.
+ *
+ * @param table - Table name, such as `'CBSL_BANKS'` or `'MOBILE_PREFIXES'`.
+ * @returns Metadata for that table.
+ *
+ * @example
+ * ```ts
+ * getReferenceDataMetadata('CBSL_BANKS').lastVerified; // '2026-10-12'
+ * getReferenceDataMetadata('MOBILE_PREFIXES').sources[0]?.authority; // 'Telecommunications Regulatory Commission of Sri Lanka'
+ * ```
+ */
 export function getReferenceDataMetadata(table: ReferenceTableId): ReferenceTableMetadata;
+/**
+ * Returns metadata for every bundled reference table, keyed by table name, as a copy.
+ *
+ * @returns Metadata for all tables.
+ *
+ * @example
+ * ```ts
+ * Object.keys(getReferenceDataMetadata()).length; // 11
+ * ```
+ */
 export function getReferenceDataMetadata(): Record<ReferenceTableId, ReferenceTableMetadata>;
 export function getReferenceDataMetadata(
   table?: ReferenceTableId,

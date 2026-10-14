@@ -1,3 +1,20 @@
+/**
+ * Every validator, parser, and formatter in one import.
+ *
+ * Each area is also available as a subpath, such as `lanka-validations/nic`, which keeps bundles small. This module also exports the shared `ValidationResult` types and string helpers.
+ *
+ * @example
+ * ```ts
+ * import { isValidNic, isValidMobile, formatLKR } from 'lanka-validations';
+ *
+ * isValidNic('921234567V'); // true
+ * isValidMobile('0771234567'); // true
+ * formatLKR(1500000, { lakhScale: true }); // 'Rs. 15,00,000.00'
+ * ```
+ *
+ * @module lanka-validations
+ */
+
 // Common Types & Utilities
 export * from './common/types';
 export * from './common/utils';
