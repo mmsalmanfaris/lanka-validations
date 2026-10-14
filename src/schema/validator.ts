@@ -128,9 +128,9 @@ export function createSchemaValidator<T extends Record<string, unknown> = Record
   schemaMap?: Partial<Record<keyof T, ValidatorRule | readonly ValidatorRule[]>>
 ): SchemaValidator<T, T>;
 export function createSchemaValidator(
-  schemaMap?: Record<PropertyKey, ValidatorRule | readonly ValidatorRule[]>
+  schemaMap?: Partial<Record<string, ValidatorRule | readonly ValidatorRule[]>>
 ): SchemaValidator<Record<string, unknown>, Record<string, unknown>> {
-  return new SchemaValidator(schemaMap as Record<string, ValidatorRule | readonly ValidatorRule[]> | undefined);
+  return new SchemaValidator(schemaMap);
 }
 
 function isEmpty(value: unknown): boolean {

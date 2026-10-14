@@ -42,7 +42,7 @@ Use semantic prefixes for branch names:
 
 ### Prerequisites
 
-- Node.js 18 or higher
+- Node.js 20 or higher
 - npm 9 or higher (or pnpm / yarn / bun)
 - Git
 

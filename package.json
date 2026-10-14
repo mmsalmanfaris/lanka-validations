@@ -1,6 +1,6 @@
 {
   "name": "lanka-validations",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "High-performance, zero-dependency Sri Lankan data validation library for TypeScript and JavaScript. Validate and parse Sri Lankan National Identity Card (NIC), phone numbers, passport, driving license, vehicle number plates, LKR currency, date of birth (DOB), gender, postal codes, CBSL bank codes, and TIN.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -93,11 +93,12 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md"
   ],
   "sideEffects": false,
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "scripts": {
     "build": "tsup && tsc --declaration --emitDeclarationOnly",
@@ -155,5 +156,8 @@
     "tsup": "^8.3.6",
     "typescript": "^5.7.3",
     "vitest": "^4.1.11"
+  },
+  "overrides": {
+    "esbuild": "^0.28.2"
   }
 }
