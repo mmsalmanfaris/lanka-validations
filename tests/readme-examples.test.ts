@@ -1,17 +1,32 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import * as lib from '../src';
 
 /**
- * Runs every README line shaped like `call(...); // expected` (or `console.log(expr); // expected`)
- * against the library, so documented results cannot drift from real behavior. People and AI
- * assistants copy these examples verbatim.
+ * Runs every documented line shaped like `call(...); // expected` (or `console.log(expr); // expected`)
+ * from the README and from TSDoc `@example` blocks against the library, so documented results cannot
+ * drift from real behavior. People and AI assistants copy these examples verbatim.
  */
 
+const CODE_BLOCK = /```(?:typescript|ts|javascript|js)\n([\s\S]*?)```/g;
+const extractBlocks = (text: string): string[] =>
+  [...text.matchAll(CODE_BLOCK)].map((match) => match[1] ?? '');
+
 const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
-const codeBlocks = [...readme.matchAll(/```(?:typescript|ts|javascript|js)\n([\s\S]*?)```/g)].map(
-  (match) => match[1] ?? '',
-);
+
+/** Code blocks inside TSDoc comments in src/, with the leading ` * ` removed. */
+function sourceDocBlocks(): string[] {
+  const srcDir = new URL('../src/', import.meta.url);
+  const files = readdirSync(srcDir, { recursive: true, encoding: 'utf8' }).filter((file) =>
+    file.endsWith('.ts'),
+  );
+  return files.flatMap((file) => {
+    const source = readFileSync(new URL(file, srcDir), 'utf8');
+    return [...source.matchAll(/\/\*\*([\s\S]*?)\*\//g)].flatMap((comment) =>
+      extractBlocks(comment[1]!.replace(/^[ \t]*\* ?/gm, '')),
+    );
+  });
+}
 
 const libNames = Object.keys(lib);
 const libValues = Object.values(lib);
@@ -42,7 +57,7 @@ interface Example {
   scope: Record<string, unknown>;
 }
 
-function collectExamples(): Example[] {
+function collectExamples(codeBlocks: string[]): Example[] {
   const examples: Example[] = [];
   for (const block of codeBlocks) {
     const scope: Record<string, unknown> = {};
@@ -63,6 +78,7 @@ function collectExamples(): Example[] {
       const commented = /^(.+?);?\s*\/\/\s*(.+)$/.exec(line);
       if (!commented) continue;
       const expression = commented[1]!.replace(/^console\.log\((.*)\)$/, '$1');
+      if (/^(if|for|while|return|await)\b/.test(expression)) continue;
       const expected = parseExpected(commented[2]!);
       const usesUnknownName = /^(\w+)[?.]/.exec(expression);
       if (
@@ -76,7 +92,8 @@ function collectExamples(): Example[] {
   return examples;
 }
 
-const examples = collectExamples();
+const examples = collectExamples(extractBlocks(readme));
+const docExamples = collectExamples(sourceDocBlocks());
 
 describe('README examples', () => {
   it('finds enough examples to be meaningful', () => {
@@ -88,6 +105,21 @@ describe('README examples', () => {
     if (actual instanceof Date) actual = actual.toISOString().slice(0, 10);
     expect(actual).toEqual(example.expected);
   });
+});
+
+describe('TSDoc @example blocks', () => {
+  it('finds examples in the source', () => {
+    expect(docExamples.length).toBeGreaterThan(30);
+  });
+
+  it.each(docExamples.map((example) => [example.line, example] as const))(
+    '%s',
+    (_line, example) => {
+      let actual = evaluate(example.expression, example.scope);
+      if (actual instanceof Date) actual = actual.toISOString().slice(0, 10);
+      expect(actual).toEqual(example.expected);
+    },
+  );
 });
 
 describe('llms.txt examples', () => {
