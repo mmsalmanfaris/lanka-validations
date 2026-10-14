@@ -26,5 +26,6 @@ npm run test:coverage && npm run lint:package && npm run size
 - Every exported function, type, and constant needs a TSDoc comment (`npm run docs` fails otherwise).
 - Reference-table changes need an official source (DRP, TRCSL, CBSL, DMT, Sri Lanka Post, IRD, DCS) recorded in `src/reference-data/metadata.ts`.
 - Behaviour changes go in `CHANGELOG.md` under the unreleased version.
+- README and `llms.txt` examples are tests (`tests/readme-examples.test.ts`): a `call(); // result` comment must show the real result. Keep `llms.txt` in sync when the API changes.
 - Never use real NIC, passport, phone, or bank numbers in tests, examples, or issues.
 - Do not commit `docs/` (private notes) or generated output (`dist/`, `coverage/`, `api-docs/`).
