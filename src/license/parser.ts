@@ -9,7 +9,7 @@ import type { DrivingLicenseInfo } from './types';
  * - Modern Smart Card format: DMT B-number or NIC-based license
  */
 export function parseDrivingLicense(rawLicense: unknown): DrivingLicenseInfo | null {
-  const cleaned = cleanString(rawLicense).toUpperCase().replace(/[\s\-]/g, '');
+  const cleaned = cleanString(rawLicense).toUpperCase().replace(/[\s-]/g, '');
   if (!cleaned) return null;
 
   // Check DMT B format: B + 7 digits
@@ -43,4 +43,3 @@ export function parseDrivingLicense(rawLicense: unknown): DrivingLicenseInfo | n
 
   return null;
 }
-

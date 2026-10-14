@@ -1,3 +1,4 @@
+/** A CBSL-registered bank. */
 export interface BankInfo {
   /** 4-digit CBSL bank code */
   code: string;
@@ -12,4 +13,3 @@ export interface BankInfo {
   /** Type of banking institution */
   category: 'licensed_commercial' | 'licensed_specialized';
 }
-

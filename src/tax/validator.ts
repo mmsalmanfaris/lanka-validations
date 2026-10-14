@@ -1,26 +1,16 @@
 import { cleanString, createFailure, createSuccess } from '../common/utils';
 import type { ValidationResult } from '../common/types';
-import { isValidNic } from '../nic/validator';
 
 /**
- * Validates a Sri Lankan Taxpayer Identification Number (TIN) issued by IRD.
- * Accepts: 9 digits, 10 digits, or valid individual NIC.
+ * Validates the format of a Sri Lankan Taxpayer Identification Number (TIN) issued by IRD.
+ * Accepts 9 or 10 digits. An NIC number is not a TIN: individuals register for a TIN
+ * using their NIC, and IRD issues a separate number.
  */
 export function isValidTIN(tin: unknown): boolean {
-  const cleaned = cleanString(tin).replace(/[\s\-]/g, '');
+  const cleaned = cleanString(tin).replace(/[\s-]/g, '');
   if (!cleaned) return false;
 
-  // 9-digit or 10-digit TIN
-  if (/^\d{9,10}$/.test(cleaned)) {
-    return true;
-  }
-
-  // IRD also designates individual NIC as TIN
-  if (isValidNic(cleaned)) {
-    return true;
-  }
-
-  return false;
+  return /^\d{9,10}$/.test(cleaned);
 }
 
 /**
@@ -56,12 +46,12 @@ export function validateTIN(tin: unknown): ValidationResult<string> {
 
   if (!isValidTIN(cleaned)) {
     return createFailure(
-      'Invalid Sri Lankan Taxpayer Identification Number (TIN). Expected 9-10 digits or valid NIC.',
-      'TIN_INVALID'
+      'Invalid Sri Lankan Taxpayer Identification Number (TIN). Expected 9-10 digits.',
+      'TIN_INVALID',
     );
   }
 
-  return createSuccess(cleaned.replace(/[\s\-]/g, ''));
+  return createSuccess(cleaned.replace(/[\s-]/g, ''));
 }
 
 /**
@@ -76,10 +66,9 @@ export function validateVAT(vat: unknown): ValidationResult<string> {
   if (!isValidVAT(cleaned)) {
     return createFailure(
       'Invalid Sri Lankan VAT number. Expected format: 9 digits (e.g. "123456789-7000").',
-      'VAT_INVALID'
+      'VAT_INVALID',
     );
   }
 
   return createSuccess(cleaned);
 }
-

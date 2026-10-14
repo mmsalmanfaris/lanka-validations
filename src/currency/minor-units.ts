@@ -1,8 +1,10 @@
 import type { ValidationResult } from '../common/types';
 import { cleanString, createFailure, createSuccess } from '../common/utils';
 
+/** What {@link validateLKRDecimal} does with more than two decimal places: reject the input, round half up, or truncate. */
 export type ExcessDecimalPolicy = 'reject' | 'round' | 'truncate';
 
+/** Options for {@link validateLKRDecimal} and {@link parseLKRMinorUnits}. */
 export interface LkrDecimalOptions {
   /** Reject negative amounts unless explicitly enabled. */
   allowNegative?: boolean;
@@ -12,6 +14,7 @@ export interface LkrDecimalOptions {
   maxMinorUnits?: bigint;
 }
 
+/** An exact LKR amount from {@link validateLKRDecimal}. */
 export interface LkrMinorUnitAmount {
   /** Exact signed amount in cents. */
   minorUnits: bigint;
@@ -19,6 +22,7 @@ export interface LkrMinorUnitAmount {
   decimal: string;
 }
 
+/** Default maximum absolute amount, in cents, accepted by {@link validateLKRDecimal} (`Number.MAX_SAFE_INTEGER`). */
 export const MAX_LKR_MINOR_UNITS = BigInt(Number.MAX_SAFE_INTEGER);
 
 function formatAbsoluteMinorUnits(value: bigint): string {
@@ -62,7 +66,10 @@ export function validateLKRDecimal(
   if (prefix.test(value)) value = value.replace(prefix, '');
   else if (suffix.test(value)) value = value.replace(suffix, '');
 
-  const match = /^(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+|[0-9]{1,2}(?:,[0-9]{2})+,[0-9]{3})(?:\.([0-9]+))?$/.exec(value);
+  const match =
+    /^(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+|[0-9]{1,2}(?:,[0-9]{2})+,[0-9]{3})(?:\.([0-9]+))?$/.exec(
+      value,
+    );
   if (!match) return createFailure('Currency amount is invalid.', 'CURRENCY_INVALID');
   if (negative && !options.allowNegative) {
     return createFailure('Negative amounts are not allowed.', 'CURRENCY_NEGATIVE');
@@ -74,13 +81,16 @@ export function validateLKRDecimal(
     return createFailure('Amount has more than two decimal places.', 'CURRENCY_EXCESS_DECIMALS');
   }
 
-  const wholeText = value.split('.')[0].replace(/,/g, '');
-  let absoluteMinor = BigInt(wholeText) * 100n + BigInt((fraction.slice(0, 2) || '').padEnd(2, '0') || '0');
+  const wholeText = value.split('.')[0]!.replace(/,/g, '');
+  let absoluteMinor =
+    BigInt(wholeText) * 100n + BigInt((fraction.slice(0, 2) || '').padEnd(2, '0') || '0');
   if (fraction.length > 2 && policy === 'round' && Number(fraction[2]) >= 5) absoluteMinor += 1n;
 
   const max = options.maxMinorUnits ?? MAX_LKR_MINOR_UNITS;
-  if (max < 0n) return createFailure('Maximum minor units must not be negative.', 'CURRENCY_INVALID');
-  if (absoluteMinor > max) return createFailure('Amount exceeds the maximum.', 'CURRENCY_EXCEEDS_MAX');
+  if (max < 0n)
+    return createFailure('Maximum minor units must not be negative.', 'CURRENCY_INVALID');
+  if (absoluteMinor > max)
+    return createFailure('Amount exceeds the maximum.', 'CURRENCY_EXCEEDS_MAX');
 
   const minorUnits = negative && absoluteMinor !== 0n ? -absoluteMinor : absoluteMinor;
   return createSuccess({ minorUnits, decimal: formatLKRMinorUnits(minorUnits) });

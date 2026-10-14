@@ -32,7 +32,11 @@ export function parseLKR(input: unknown): number | null {
   else str = str.replace(suffix, '');
 
   // Grouping must be validated before commas are removed.
-  if (!/^(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+|[0-9]{1,2}(?:,[0-9]{2})+,[0-9]{3})(?:\.[0-9]+)?$/.test(str)) {
+  if (
+    !/^(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+|[0-9]{1,2}(?:,[0-9]{2})+,[0-9]{3})(?:\.[0-9]+)?$/.test(
+      str,
+    )
+  ) {
     return null;
   }
   const amount = Number(str.replace(/,/g, ''));

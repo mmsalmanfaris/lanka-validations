@@ -10,7 +10,7 @@ const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
  */
 export function parseNicDayOfYear(
   year: number,
-  dayOfYear: number
+  dayOfYear: number,
 ): { month: number; day: number } | null {
   if (!Number.isInteger(year) || !Number.isInteger(dayOfYear) || dayOfYear < 1 || dayOfYear > 366) {
     return null;
@@ -20,7 +20,7 @@ export function parseNicDayOfYear(
   let month = 0;
 
   for (let i = 0; i < DAYS_IN_MONTH.length; i++) {
-    const daysInThisMonth = DAYS_IN_MONTH[i];
+    const daysInThisMonth = DAYS_IN_MONTH[i]!;
     if (remaining <= daysInThisMonth) {
       month = i + 1;
       break;
@@ -144,4 +144,3 @@ export function parseNic(rawNic: unknown, options?: NicOptions): NicInfo | null 
     oldNic,
   };
 }
-

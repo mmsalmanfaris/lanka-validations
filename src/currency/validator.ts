@@ -2,6 +2,7 @@ import { cleanString, createFailure, createSuccess } from '../common/utils';
 import type { ValidationResult } from '../common/types';
 import { parseLKR } from './parser';
 
+/** Range options for {@link isValidLKR} and {@link validateLKR}. Bounds are inclusive. */
 export interface LkrValidationOptions {
   /** Minimum allowable amount */
   min?: number;
@@ -36,7 +37,7 @@ export function isValidLKR(input: unknown, options?: LkrValidationOptions): bool
  */
 export function validateLKR(
   input: unknown,
-  options?: LkrValidationOptions
+  options?: LkrValidationOptions,
 ): ValidationResult<number> {
   const str = cleanString(input);
   if (!str && typeof input !== 'number') {
@@ -47,7 +48,7 @@ export function validateLKR(
   if (num === null) {
     return createFailure(
       'Invalid Sri Lankan Rupee amount format. Example: "Rs. 1,500.00" or "1500".',
-      'CURRENCY_INVALID'
+      'CURRENCY_INVALID',
     );
   }
 
@@ -56,19 +57,12 @@ export function validateLKR(
   }
 
   if (options?.min !== undefined && num < options.min) {
-    return createFailure(
-      `Currency amount must be at least ${options.min}.`,
-      'CURRENCY_BELOW_MIN'
-    );
+    return createFailure(`Currency amount must be at least ${options.min}.`, 'CURRENCY_BELOW_MIN');
   }
 
   if (options?.max !== undefined && num > options.max) {
-    return createFailure(
-      `Currency amount must not exceed ${options.max}.`,
-      'CURRENCY_EXCEEDS_MAX'
-    );
+    return createFailure(`Currency amount must not exceed ${options.max}.`, 'CURRENCY_EXCEEDS_MAX');
   }
 
   return createSuccess(num);
 }
-

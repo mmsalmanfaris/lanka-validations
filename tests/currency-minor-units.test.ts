@@ -12,7 +12,9 @@ describe('exact LKR minor-unit API', () => {
     expect(parseLKRMinorUnits('1.999')).toBeNull();
     expect(parseLKRMinorUnits('1.999', { excessDecimals: 'truncate' })).toBe(199n);
     expect(parseLKRMinorUnits('1.999', { excessDecimals: 'round' })).toBe(200n);
-    expect(parseLKRMinorUnits('-1.005', { allowNegative: true, excessDecimals: 'round' })).toBe(-101n);
+    expect(parseLKRMinorUnits('-1.005', { allowNegative: true, excessDecimals: 'round' })).toBe(
+      -101n,
+    );
   });
 
   it('rejects numbers, bad grouping, symbols in both positions, and excessive ranges', () => {

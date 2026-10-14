@@ -50,7 +50,7 @@ describe('Schema Validator Module', () => {
 
     const mismatched = {
       nic: '921234567V', // male
-      gender: 'female',   // mismatch!
+      gender: 'female', // mismatch!
     };
 
     const result = validator.validate(mismatched);
@@ -67,4 +67,3 @@ describe('Schema Validator Module', () => {
     expect(result.isValid).toBe(false);
   });
 });
-

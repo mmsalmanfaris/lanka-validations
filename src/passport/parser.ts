@@ -7,14 +7,14 @@ import type { PassportInfo, PassportType } from './types';
  * E-Passport: 1-2 letters + 7-8 digits (e.g. P1234567, PA1234567)
  */
 export function parsePassport(rawPassport: unknown): PassportInfo | null {
-  const cleaned = cleanString(rawPassport).toUpperCase().replace(/[\s\-]/g, '');
+  const cleaned = cleanString(rawPassport).toUpperCase().replace(/[\s-]/g, '');
   if (!cleaned) return null;
 
   // Standard Sri Lankan MRP: 1 letter + 7 digits
   const mrpMatch = cleaned.match(/^([NMLDO])(\d{7})$/);
   if (mrpMatch) {
-    const prefix = mrpMatch[1];
-    const number = mrpMatch[2];
+    const prefix = mrpMatch[1]!;
+    const number = mrpMatch[2]!;
     let type: PassportType = 'ordinary';
 
     if (prefix === 'D') {
@@ -35,9 +35,9 @@ export function parsePassport(rawPassport: unknown): PassportInfo | null {
   // Modern / e-Passport: P or PA or other letters + 7 to 8 digits
   const ePassportMatch = cleaned.match(/^([A-Z]{1,2})(\d{7,8})$/);
   if (ePassportMatch) {
-    const prefix = ePassportMatch[1];
-    const number = ePassportMatch[2];
-    let type: PassportType = 'ordinary';
+    const prefix = ePassportMatch[1]!;
+    const number = ePassportMatch[2]!;
+    let type: PassportType;
 
     if (prefix === 'D') {
       type = 'diplomatic';
@@ -62,4 +62,3 @@ export function parsePassport(rawPassport: unknown): PassportInfo | null {
 
   return null;
 }
-

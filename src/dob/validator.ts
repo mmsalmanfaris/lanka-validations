@@ -4,8 +4,10 @@ import { parseNic } from '../nic/parser';
 import type { DobOptions } from './types';
 
 function validOptions(options?: DobOptions): boolean {
-  if (options?.referenceDate !== undefined &&
-      (!(options.referenceDate instanceof Date) || !Number.isFinite(options.referenceDate.getTime()))) {
+  if (
+    options?.referenceDate !== undefined &&
+    (!(options.referenceDate instanceof Date) || !Number.isFinite(options.referenceDate.getTime()))
+  ) {
     return false;
   }
   const { minAge, maxAge } = options ?? {};
@@ -39,8 +41,12 @@ export function parseDob(input: unknown): Date | null {
   // setUTCFullYear avoids Date.UTC's special treatment of years 0–99.
   const date = new Date(0);
   date.setUTCFullYear(year, month - 1, day);
-  return year >= 1 && date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 && date.getUTCDate() === day ? date : null;
+  return year >= 1 &&
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day
+    ? date
+    : null;
 }
 
 /**
@@ -115,7 +121,7 @@ export function matchesNicDob(dobInput: unknown, nicInput: unknown): boolean {
  */
 export function validateDob(
   input: unknown,
-  options?: DobOptions
+  options?: DobOptions,
 ): ValidationResult<{ dob: Date; age: number; isoDate: string }> {
   if (!validOptions(options)) {
     return createFailure('Invalid date of birth validation options.', 'DOB_INVALID_OPTIONS');
@@ -142,14 +148,14 @@ export function validateDob(
   if (options?.minAge !== undefined && age < options.minAge) {
     return createFailure(
       `Age ${age} is below minimum required age of ${options.minAge}.`,
-      'DOB_BELOW_MIN_AGE'
+      'DOB_BELOW_MIN_AGE',
     );
   }
 
   if (options?.maxAge !== undefined && age > options.maxAge) {
     return createFailure(
       `Age ${age} exceeds maximum allowed age of ${options.maxAge}.`,
-      'DOB_EXCEEDS_MAX_AGE'
+      'DOB_EXCEEDS_MAX_AGE',
     );
   }
 
@@ -159,4 +165,3 @@ export function validateDob(
     isoDate: formatIsoDate(dob),
   });
 }
-

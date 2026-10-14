@@ -49,4 +49,3 @@ export * from './i18n';
 
 // Versioned provenance and coverage for bundled reference tables
 export * from './reference-data';
-

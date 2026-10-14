@@ -1,7 +1,10 @@
+/** Currency symbols accepted by {@link formatLKR}. An empty string formats the number without a symbol. */
 export type LkrSymbol = 'Rs.' | 'Rs' | 'රු.' | 'ரூ.' | 'LKR' | '';
 
+/** Language for {@link lkrToWords}: English, Sinhala, or Tamil. */
 export type CurrencyLocale = 'en' | 'si' | 'ta';
 
+/** Options for {@link formatLKR}. */
 export interface FormatLkrOptions {
   /** Symbol prefix or suffix. Default: 'Rs. ' */
   symbol?: LkrSymbol;
@@ -15,6 +18,7 @@ export interface FormatLkrOptions {
   lakhScale?: boolean;
 }
 
+/** Options for {@link lkrToWords}. */
 export interface WordsOptions {
   /** Target language for number to words: 'en' (English), 'si' (Sinhala), or 'ta' (Tamil). Default: 'en' */
   language?: CurrencyLocale;
@@ -23,4 +27,3 @@ export interface WordsOptions {
   /** Appends suffix, e.g. 'Only'. Default: 'Only' for English, '' for Sinhala/Tamil */
   suffix?: string;
 }
-

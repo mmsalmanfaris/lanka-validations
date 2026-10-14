@@ -46,7 +46,7 @@ export function validateNic(rawNic: unknown, options?: NicOptions): ValidationRe
   if (!isOldPattern && !isNewPattern) {
     return createFailure(
       'Invalid NIC format. Must be 9 digits followed by V/X or 12 digits.',
-      'NIC_INVALID_FORMAT'
+      'NIC_INVALID_FORMAT',
     );
   }
 
@@ -65,7 +65,7 @@ export function validateNic(rawNic: unknown, options?: NicOptions): ValidationRe
   if (year > currentYear || year < 1850) {
     return createFailure(
       `Invalid birth year in NIC: ${year}. Must be between 1850 and ${currentYear}.`,
-      'NIC_INVALID_YEAR'
+      'NIC_INVALID_YEAR',
     );
   }
 
@@ -73,10 +73,9 @@ export function validateNic(rawNic: unknown, options?: NicOptions): ValidationRe
   if (dayOfYear < 1 || dayOfYear > 366) {
     return createFailure(
       `Invalid day of year in NIC: ${rawDays}. Must be 001-366 (male) or 501-866 (female).`,
-      'NIC_INVALID_DAY'
+      'NIC_INVALID_DAY',
     );
   }
 
   return createFailure('Date of birth encoded in NIC is in the future.', 'NIC_FUTURE_DOB');
 }
-

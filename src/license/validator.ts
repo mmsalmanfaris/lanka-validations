@@ -15,8 +15,7 @@ export function isValidDrivingLicense(license: unknown): boolean {
  * Validates whether the given code is an official Sri Lankan DMT license category (e.g. 'A', 'B', 'B1', 'C1').
  */
 export function isValidLicenseCategory(cat: unknown): boolean {
-  const cleaned = cleanString(cat).toUpperCase();
-  return Boolean(DMT_LICENSE_CATEGORIES[cleaned]);
+  return Object.hasOwn(DMT_LICENSE_CATEGORIES, cleanString(cat).toUpperCase());
 }
 
 /**
@@ -24,14 +23,16 @@ export function isValidLicenseCategory(cat: unknown): boolean {
  */
 export function getLicenseCategoryInfo(cat: unknown): LicenseCategoryInfo | null {
   const cleaned = cleanString(cat).toUpperCase();
-  return DMT_LICENSE_CATEGORIES[cleaned] ?? null;
+  return Object.hasOwn(DMT_LICENSE_CATEGORIES, cleaned)
+    ? { ...DMT_LICENSE_CATEGORIES[cleaned]! }
+    : null;
 }
 
 /**
  * Returns all official DMT license categories.
  */
 export function getAllLicenseCategories(): LicenseCategoryInfo[] {
-  return Object.values(DMT_LICENSE_CATEGORIES);
+  return Object.values(DMT_LICENSE_CATEGORIES).map((category) => ({ ...category }));
 }
 
 /**
@@ -47,10 +48,9 @@ export function validateDrivingLicense(license: unknown): ValidationResult<Drivi
   if (!info) {
     return createFailure(
       'Invalid Sri Lankan driving license number. Expected format: B1234567 or valid NIC number.',
-      'LICENSE_INVALID'
+      'LICENSE_INVALID',
     );
   }
 
   return createSuccess(info);
 }
-

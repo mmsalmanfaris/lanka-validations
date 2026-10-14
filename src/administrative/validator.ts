@@ -58,13 +58,12 @@ export function getDistrictInfo(d: unknown): DistrictInfo | null {
  * Returns all 9 Sri Lankan provinces with details.
  */
 export function getProvinces(): ProvinceInfo[] {
-  return PROVINCES.map(prov => ({ ...prov, districts: [...prov.districts] }));
+  return PROVINCES.map((prov) => ({ ...prov, districts: [...prov.districts] }));
 }
 
 /**
  * Returns all 25 Sri Lankan districts with details.
  */
 export function getDistricts(): DistrictInfo[] {
-  return DISTRICTS.map(dist => ({ ...dist }));
+  return DISTRICTS.map((dist) => ({ ...dist }));
 }
-

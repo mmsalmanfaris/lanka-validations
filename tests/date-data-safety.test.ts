@@ -1,27 +1,60 @@
 import { describe, expect, it } from 'vitest';
+import * as lib from '../src';
 import {
-  parseDob, validateDob, isValidDob, calculateAge,
-  parseNic, validateNic, isValidNic, isValidNewNic, isValidOldNic, parseNicDayOfYear,
-  getBankByCode, getBankList, validateBankAccount, isValidBankCode, CBSL_BANKS,
-  getProvinceInfo, getProvinces, getDistrictInfo, getDistricts, PROVINCES, DISTRICTS,
-  cleanString, MAX_INPUT_LENGTH, parsePhone, parseLKR, lookupPostalCode,
+  parseDob,
+  validateDob,
+  isValidDob,
+  calculateAge,
+  parseNic,
+  validateNic,
+  isValidNic,
+  isValidNewNic,
+  isValidOldNic,
+  parseNicDayOfYear,
+  getBankByCode,
+  getBankList,
+  validateBankAccount,
+  isValidBankCode,
+  CBSL_BANKS,
+  getProvinceInfo,
+  getProvinces,
+  getDistrictInfo,
+  getDistricts,
+  PROVINCES,
+  DISTRICTS,
+  cleanString,
+  MAX_INPUT_LENGTH,
+  parsePhone,
+  parseLKR,
+  lookupPostalCode,
 } from '../src';
 
 describe('strict UTC date-only parsing', () => {
   it.each(['2000-02-29', '2000/02/29', '29-02-2000', '29/02/2000'])(
-    'accepts documented format %s', value => {
+    'accepts documented format %s',
+    (value) => {
       expect(parseDob(value)?.toISOString()).toBe('2000-02-29T00:00:00.000Z');
     },
   );
-  it.each(['2001-02-29', '2024-04-31', '2024-00-01', '2024-01-00',
-    '2024-02/29', '29/02-2024', '2024-2-9', 'Feb 29, 2024', '2024',
-    '2024-02-29T00:00:00Z', '2024-02-29T12:00:00+05:30', 2000, 0])(
-    'rejects non-calendar or undocumented format %s', value => {
-      expect(parseDob(value)).toBeNull();
-      expect(isValidDob(value)).toBe(false);
-      expect(validateDob(value).code).toBe('DOB_INVALID');
-    },
-  );
+  it.each([
+    '2001-02-29',
+    '2024-04-31',
+    '2024-00-01',
+    '2024-01-00',
+    '2024-02/29',
+    '29/02-2024',
+    '2024-2-9',
+    'Feb 29, 2024',
+    '2024',
+    '2024-02-29T00:00:00Z',
+    '2024-02-29T12:00:00+05:30',
+    2000,
+    0,
+  ])('rejects non-calendar or undocumented format %s', (value) => {
+    expect(parseDob(value)).toBeNull();
+    expect(isValidDob(value)).toBe(false);
+    expect(validateDob(value).code).toBe('DOB_INVALID');
+  });
   it('uses the UTC day of Date objects and returns a detached midnight value', () => {
     const original = new Date('2024-03-01T01:00:00+05:30');
     const parsed = parseDob(original)!;
@@ -73,7 +106,7 @@ describe('deterministic NIC dates', () => {
 describe('reference data isolation', () => {
   it('keeps bank records isolated across lookup, list, and validation', () => {
     getBankByCode('7010')!.name = 'changed';
-    getBankList()[0].name = 'changed';
+    getBankList()[0]!.name = 'changed';
     validateBankAccount('12345678', '7010').data!.bank!.name = 'changed';
     expect(getBankByCode('7010')!.name).toBe('Bank of Ceylon');
     expect(isValidBankCode('__proto__')).toBe(false);
@@ -81,21 +114,21 @@ describe('reference data isolation', () => {
     expect(Object.isFrozen(CBSL_BANKS)).toBe(true);
     expect(Object.isFrozen(CBSL_BANKS['7010'])).toBe(true);
     expect(Reflect.set(CBSL_BANKS, '9999', CBSL_BANKS['7010'])).toBe(false);
-    expect(Reflect.set(CBSL_BANKS['7010'], 'name', 'changed')).toBe(false);
+    expect(Reflect.set(CBSL_BANKS['7010']!, 'name', 'changed')).toBe(false);
   });
   it('copies nested province lists and district records', () => {
     getProvinceInfo('WP')!.districts.push('changed');
-    getProvinces()[0].districts.length = 0;
+    getProvinces()[0]!.districts.length = 0;
     getProvinces().length = 0;
     getDistrictInfo('Colombo')!.name = 'changed';
-    getDistricts()[0].name = 'changed';
+    getDistricts()[0]!.name = 'changed';
     expect(getProvinceInfo('WP')!.districts).toEqual(['Colombo', 'Gampaha', 'Kalutara']);
     expect(getProvinces()).toHaveLength(9);
     expect(getDistrictInfo('Colombo')!.name).toBe('Colombo');
     expect(getDistricts()).toHaveLength(25);
     expect(Object.isFrozen(PROVINCES)).toBe(true);
     expect(Object.isFrozen(PROVINCES[0])).toBe(true);
-    expect(Object.isFrozen(PROVINCES[0].districts)).toBe(true);
+    expect(Object.isFrozen(PROVINCES[0]!.districts)).toBe(true);
     expect(Object.isFrozen(DISTRICTS)).toBe(true);
     expect(Object.isFrozen(DISTRICTS[0])).toBe(true);
   });
@@ -114,6 +147,56 @@ describe('bounded normalization', () => {
       expect(lookupPostalCode(prefix + '20000')).toBeNull();
       expect(getBankByCode(prefix + '7010')).toBeNull();
       expect(getProvinceInfo(prefix + 'WP')).toBeNull();
+    }
+  });
+});
+
+describe('exported reference tables are immutable', () => {
+  const tables = {
+    CBSL_BANKS: lib.CBSL_BANKS,
+    PROVINCES: lib.PROVINCES,
+    DISTRICTS: lib.DISTRICTS,
+    MOBILE_PREFIXES: lib.MOBILE_PREFIXES,
+    AREA_CODES: lib.AREA_CODES,
+    FIXED_OPERATOR_DIGITS: lib.FIXED_OPERATOR_DIGITS,
+    SRI_LANKA_SHORT_CODES: lib.SRI_LANKA_SHORT_CODES,
+    POSTAL_PREFIXES: lib.POSTAL_PREFIXES,
+    MAJOR_CITIES: lib.MAJOR_CITIES,
+    DMT_LICENSE_CATEGORIES: lib.DMT_LICENSE_CATEGORIES,
+    VEHICLE_PROVINCES: lib.VEHICLE_PROVINCES,
+    VALIDATION_MESSAGES: lib.VALIDATION_MESSAGES,
+    REFERENCE_DATA_METADATA: lib.REFERENCE_DATA_METADATA,
+  };
+
+  function isDeepFrozen(value: unknown): boolean {
+    if (value === null || typeof value !== 'object') return true;
+    return Object.isFrozen(value) && Object.values(value).every(isDeepFrozen);
+  }
+
+  it.each(Object.entries(tables))('%s is deeply frozen', (_name, table) => {
+    expect(isDeepFrozen(table)).toBe(true);
+  });
+
+  it('mutating a table cannot change validation results', () => {
+    expect(Reflect.set(lib.MOBILE_PREFIXES, '079', 'Dialog')).toBe(false);
+    expect(lib.isValidMobile('0791234567')).toBe(false);
+    expect(Reflect.set(lib.POSTAL_PREFIXES, '99', { prefix: '99' })).toBe(false);
+    expect(lib.isValidPostalCode('99000')).toBe(false);
+  });
+
+  it('license category getters return independent copies', () => {
+    const info = lib.getLicenseCategoryInfo('B1')!;
+    info.minAge = 0;
+    lib.getAllLicenseCategories()[0]!.name = 'changed';
+
+    expect(lib.getLicenseCategoryInfo('B1')!.minAge).toBe(lib.DMT_LICENSE_CATEGORIES.B1!.minAge);
+    expect(lib.getAllLicenseCategories()[0]!.name).not.toBe('changed');
+  });
+
+  it('license lookups ignore inherited property names', () => {
+    for (const name of ['__proto__', 'constructor', 'toString', 'hasOwnProperty']) {
+      expect(lib.isValidLicenseCategory(name)).toBe(false);
+      expect(lib.getLicenseCategoryInfo(name)).toBeNull();
     }
   });
 });

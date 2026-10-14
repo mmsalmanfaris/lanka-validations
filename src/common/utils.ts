@@ -52,7 +52,7 @@ export function formatIsoDate(date: Date): string {
 export function isValidCalendarDate(year: number, month: number, day: number): boolean {
   if (year < 1800 || year > 2200 || month < 1 || month > 12 || day < 1) return false;
   const daysInMonth = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  return day <= daysInMonth[month - 1];
+  return day <= daysInMonth[month - 1]!;
 }
 
 /**
@@ -71,7 +71,7 @@ export function createSuccess<T>(data: T): ValidationResult<T> {
 export function createFailure<T = unknown>(
   error: string,
   code = 'VALIDATION_FAILED',
-  errors?: string[]
+  errors?: string[],
 ): ValidationResult<T> {
   return {
     isValid: false,

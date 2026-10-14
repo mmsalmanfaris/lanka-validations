@@ -59,7 +59,7 @@ export function validatePostalCode(code: unknown): ValidationResult<PostalCodeIn
   if (!normalized) {
     return createFailure(
       'Invalid postal code format. Expected a 5-digit code (e.g. "00100", "20000").',
-      'POSTAL_CODE_INVALID_FORMAT'
+      'POSTAL_CODE_INVALID_FORMAT',
     );
   }
 
@@ -67,10 +67,9 @@ export function validatePostalCode(code: unknown): ValidationResult<PostalCodeIn
   if (!info) {
     return createFailure(
       'Postal code is not within the bundled Sri Lankan postal district ranges.',
-      'POSTAL_CODE_OUT_OF_RANGE'
+      'POSTAL_CODE_OUT_OF_RANGE',
     );
   }
 
   return createSuccess(info);
 }
-

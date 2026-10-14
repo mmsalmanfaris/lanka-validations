@@ -55,4 +55,3 @@ describe('Driving License Module', () => {
     expect(validateDrivingLicense('').code).toBe('LICENSE_REQUIRED');
   });
 });
-

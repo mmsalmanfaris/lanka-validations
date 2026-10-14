@@ -4,6 +4,7 @@ import { isValidBankAccountNumber } from '../bank';
 import { parseNic } from '../nic';
 import { parsePhone } from '../phone';
 
+/** Placeholder returned by {@link redactSensitiveValue}. */
 export const REDACTED_VALUE = '[REDACTED]' as const;
 
 /** Replaces any supplied value without coercing or inspecting it. */
@@ -12,8 +13,11 @@ export function redactSensitiveValue(_value: unknown): typeof REDACTED_VALUE {
 }
 
 function maskKeepingLast(value: string, visibleDigits: number): string {
-  const visible = Math.max(0, Math.min(visibleDigits, value.length));
-  return `${'*'.repeat(value.length - visible)}${value.slice(-visible)}`;
+  // Non-finite requests fail closed. Slice from an explicit index: slice(-0) would return everything.
+  const requested = Number.isFinite(visibleDigits) ? Math.floor(visibleDigits) : 0;
+  const visible = Math.max(0, Math.min(requested, value.length));
+  const start = value.length - visible;
+  return `${'*'.repeat(start)}${value.slice(start)}`;
 }
 
 /** Masks a valid NIC for display. Returns null for invalid input. */
@@ -38,6 +42,7 @@ export function maskBankAccount(input: unknown, visibleDigits = 4): string | nul
   return maskKeepingLast(normalized, visibleDigits);
 }
 
+/** A validation outcome with the input value removed, safe to write to logs. */
 export interface SafeValidationLog {
   isValid: boolean;
   code?: string;

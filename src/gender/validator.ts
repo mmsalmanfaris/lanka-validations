@@ -4,30 +4,21 @@ import { parseNic } from '../nic/parser';
 import type { Gender } from '../nic/types';
 
 function normalizeTerm(str: string): string {
-  return str.normalize('NFC').replace(/[\u200B\u200C\u200D\uFEFF]/g, '').toLowerCase();
+  return str
+    .normalize('NFC')
+    .replace(/\u200B|\u200C|\u200D|\uFEFF/g, '')
+    .toLowerCase();
 }
 
-const MALE_TERMS = new Set([
-  'male',
-  'm',
-  'man',
-  'boy',
-  'පිරිමි',
-  'පුරුෂ',
-  'ஆண்',
-].map(normalizeTerm));
+const MALE_TERMS = new Set(
+  ['male', 'm', 'man', 'boy', 'පිරිමි', 'පුරුෂ', 'ஆண்'].map(normalizeTerm),
+);
 
-const FEMALE_TERMS = new Set([
-  'female',
-  'f',
-  'woman',
-  'girl',
-  'ගැහැණු',
-  'ගැහැනු',
-  'ස්ත්‍රී',
-  'ස්ත්‍රි',
-  'பெண்',
-].map(normalizeTerm));
+const FEMALE_TERMS = new Set(
+  ['female', 'f', 'woman', 'girl', 'ගැහැණු', 'ගැහැනු', 'ස්ත්‍රී', 'ස්ත්‍රි', 'பெண்'].map(
+    normalizeTerm,
+  ),
+);
 
 /**
  * Normalizes any English, Sinhala, or Tamil representation of gender into 'male' | 'female'.
@@ -78,7 +69,7 @@ export function validateGender(input: unknown): ValidationResult<Gender> {
   if (!normalized) {
     return createFailure(
       'Invalid gender value. Expected male/female, M/F, පිරිමි/ගැහැණු, or ஆண்/பெண்.',
-      'GENDER_INVALID'
+      'GENDER_INVALID',
     );
   }
 

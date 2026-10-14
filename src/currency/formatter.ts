@@ -5,7 +5,7 @@ import type { FormatLkrOptions } from './types';
  */
 function formatSouthAsianNumber(val: number, decimals: number): string {
   const parts = val.toFixed(decimals).split('.');
-  let integerPart = parts[0];
+  let integerPart = parts[0]!;
   const decimalPart = parts[1];
 
   const isNeg = integerPart.startsWith('-');
@@ -56,7 +56,7 @@ export function formatLKR(amount: number, options?: FormatLkrOptions): string {
   } else {
     // Western grouping: 1,500,000.00
     const parts = amount.toFixed(decimals).split('.');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    parts[0] = parts[0]!.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     formattedNum = parts.join('.');
   }
 
@@ -68,4 +68,3 @@ export function formatLKR(amount: number, options?: FormatLkrOptions): string {
 
   return `${sym}${formattedNum}`;
 }
-

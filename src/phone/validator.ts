@@ -54,8 +54,10 @@ export function validatePhone(phone: unknown): ValidationResult<PhoneInfo> {
   const cleaned = cleanString(phone);
   const normalized = normalizePhoneNumber(cleaned);
   if (/^0[0-9]{9}$/.test(normalized) || /^[0-9]{3,4}$/.test(cleaned)) {
-    return createFailure('Phone number prefix or short code is not in the bundled reference data.', 'PHONE_UNSUPPORTED');
+    return createFailure(
+      'Phone number prefix or short code is not in the bundled reference data.',
+      'PHONE_UNSUPPORTED',
+    );
   }
   return createFailure('Invalid Sri Lankan phone number format.', 'PHONE_INVALID');
 }
-

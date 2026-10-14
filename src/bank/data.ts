@@ -1,5 +1,6 @@
 import type { BankInfo } from './types';
 
+/** CBSL bank records keyed by 4-digit bank code (for example `'7010'`). Prefer {@link getBankByCode}, which returns a copy. */
 export const CBSL_BANKS: Readonly<Record<string, Readonly<BankInfo>>> = {
   '7010': {
     code: '7010',
@@ -212,7 +213,6 @@ export const CBSL_BANKS: Readonly<Record<string, Readonly<BankInfo>>> = {
     category: 'licensed_commercial',
   },
 };
-
 
 for (const bank of Object.values(CBSL_BANKS)) Object.freeze(bank);
 Object.freeze(CBSL_BANKS);

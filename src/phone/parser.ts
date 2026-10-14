@@ -5,7 +5,7 @@ import {
   MOBILE_PREFIXES,
   SRI_LANKA_SHORT_CODES,
 } from './constants';
-import type { PhoneInfo, PhoneType } from './types';
+import type { PhoneInfo } from './types';
 
 /**
  * Normalizes any Sri Lankan phone number string into a clean 10-digit national number (e.g., '0771234567').
@@ -124,4 +124,3 @@ export function parsePhone(rawPhone: unknown): PhoneInfo | null {
 
   return null;
 }
-

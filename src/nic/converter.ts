@@ -21,7 +21,7 @@ export function convertOldToNewNic(oldNic: unknown, options?: NicOptions): strin
  */
 export function convertNewToOldNic(
   newNic: unknown,
-  options?: NicOptions & { isVoter?: boolean }
+  options?: NicOptions & { isVoter?: boolean },
 ): string | null {
   const info = parseNic(newNic, options);
   if (!info || info.format !== 'new' || !info.oldNic) {
@@ -32,4 +32,3 @@ export function convertNewToOldNic(
   // Replace the default 'V' with chosen suffix
   return info.oldNic.slice(0, 9) + suffix;
 }
-
