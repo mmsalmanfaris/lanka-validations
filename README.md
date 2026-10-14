@@ -97,6 +97,8 @@ Full API reference: **https://mmsalmanfaris.github.io/lanka-validations/**
 - [Cross-Field Verification (NIC Matching)](#cross-field-verification-nic-matching)
 - [Using with Zod, React Hook Form, and Express](#using-with-zod-react-hook-form-and-express)
 - [API Reference](#api-reference)
+- [Input Rules](#input-rules)
+- [Performance](#performance)
 - [Data Sources](#data-sources)
 - [Frequently Asked Questions](#frequently-asked-questions)
 - [Contributing](#contributing)
@@ -589,112 +591,43 @@ Full generated documentation for every export: **https://mmsalmanfaris.github.io
 
 ---
 
-## Input contracts and validation safety
+## Input Rules
 
-Scalar parsers and validators accept strings and finite numbers where their format
-matches. Objects, arrays, booleans, bigint, symbols, `NaN`, and infinities are
-rejected without calling user-defined string conversion. DOB functions additionally
-accept valid `Date` objects. Use strings for identifiers to preserve leading zeros
-and avoid JavaScript numeric precision loss. Strings are trimmed, and zero-width
-spaces/BOMs are removed by the common normalizer.
-Raw strings longer than `MAX_INPUT_LENGTH` (1024 UTF-16 code units) are rejected
-before trimming, case conversion, or separator removal. The limit includes whitespace
-and invisible characters; inputs are never truncated. This is a library resource
-limit, not an official identifier-length rule. DOB inputs are restricted as below.
+**For every validator:**
 
-- Bank codes must normalize to four ASCII digits and belong to the bank table.
-- Postal codes accept one to five ASCII digits (or integers from 0 to 99999),
-  padded to five digits. Letters, embedded separators, and fractions are rejected.
-  Lookup still checks known ranges, not exact postal assignment.
-- Short codes must contain only their three or four digits after trimming.
-  `isValidPhone` includes short codes; use `isValidContactPhone` to exclude them,
-  or `isValidMobile` for mobile-only fields. Full numbers retain support for
-  spaces, hyphens, parentheses, dots, slashes, and a leading international `+`.
-- `parseLKR` accepts ungrouped, Western (`1,234,567`), and South Asian
-  (`12,34,567`) grouping. A single currency symbol may precede or follow the
-  amount. Negatives use a leading minus or enclosing parentheses. Malformed
-  grouping, embedded/repeated symbols, and non-finite results are rejected.
-  Magnitudes must not exceed exported `MAX_LKR_AMOUNT`
-  (`Number.MAX_SAFE_INTEGER / 100`). Parsing returns an approximate JavaScript
-  number without rounding fractional digits; it is not an exact decimal-money API.
-- `lkrToWords` rounds the number's shortest decimal representation to cents,
-  with ties away from zero, before splitting rupees and cents. This includes
-  carrying 100 cents into the next rupee. `includeCents: false` hides the cents
-  after rounding. Rounded magnitudes must be below 1 trillion rupees for English
-  and 1 billion for Sinhala/Tamil; invalid or unsupported amounts throw
-  `RangeError`. Existing Sinhala/Tamil vocabulary has not received a new
-  native-speaker review.
-- DOB age bounds must be non-negative integers with `minAge <= maxAge`, and a
-  supplied reference date must be valid. Invalid options return `false` from
-  `isValidDob`, `DOB_INVALID_OPTIONS` from `validateDob`, and an invalid age
-  reference returns `null` from `calculateAge`.
-- DOB strings must use exactly `YYYY-MM-DD`, `YYYY/MM/DD`, `DD-MM-YYYY`, or
-  `DD/MM/YYYY`, with two-digit months/days and consistent separators. Numbers,
-  timestamps, month names, and other `Date.parse` formats are rejected. Dates must
-  exist in the calendar. `Date` inputs use their **UTC calendar date**, are copied,
-  and normalized to UTC midnight. Age and future-date checks use UTC, independently
-  of the host time zone; a local midnight Date can represent the previous UTC day.
-- NIC parsing and boolean/detailed validation accept `{ referenceDate: Date }`
-  as an optional second argument. They use one UTC reference for both year and
-  age checks and reject future DOBs within the same year (`NIC_FUTURE_DOB`).
-  Invalid references produce `NIC_INVALID_OPTIONS` in detailed validation.
-  Converters accept the same option; `formatNic` accepts it as a third argument,
-  and `rules.nic(options)` supports it in schemas.
-- Bank, province, and district getters return independent mutable copies, including
-  province district arrays. Changing a returned record cannot affect subsequent
-  lookups. Exported `CBSL_BANKS`, `PROVINCES`, and `DISTRICTS` tables are deeply
-  frozen with readonly declaration types. Consumers that mutated these shared
-  exports must instead use getter copies; direct mutation now fails.
-- Schema validation accepts plain or null-prototype records. Invalid roots return
-  an error under `$root`. The `errors` dictionary has no prototype, so fields such
-  as `__proto__` work normally. Use `Object.hasOwn(errors, field)` instead of
-  `errors.hasOwnProperty(field)`. Rule exceptions still propagate to the caller.
+- Accepts strings and finite numbers. Objects, arrays, booleans, `NaN`, and `Infinity` are rejected without calling their `toString`.
+- Trims whitespace and removes zero-width characters. Strings over **1,024 characters** are rejected, never truncated.
+- Never throws on bad input; `lkrToWords` is the one exception (see below).
+- Pass identifiers as strings to keep leading zeros.
 
-These checks validate supported formats and semantics, not identity, account
-ownership, or official registration. The stricter rejection rules and word-conversion
-range errors are intentional changes from earlier permissive behavior.
+**Per input:**
 
-The implementation follows [OWASP input-validation guidance](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html),
-[own-property lookup semantics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwn),
-and [finite-number checks](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite).
+| Input | Accepted | Notes |
+| --- | --- | --- |
+| NIC | `921234567V`, `199212304567` | Optional `{ referenceDate }` makes age checks deterministic. Future birth dates are rejected. |
+| Phone | Spaces, `-`, `( )`, `.`, `/`, leading `+94` | `isValidPhone` includes short codes such as `119`; use `isValidContactPhone` or `isValidMobile` to exclude them. |
+| Postal code | 1 to 5 digits, padded to 5 | Checks the district prefix, not exact post-office assignment. |
+| Bank code | 4 digits in the CBSL table | |
+| LKR amount | `1,234,567`, `12,34,567`, `Rs.` before or after, `-` or `( )` for negatives | Returns a JavaScript number. For exact money, use `parseLKRMinorUnits` (cents as `bigint`). |
+| Amount in words | Any finite amount, rounded to cents | Below 1 trillion rupees in English, 1 billion in Sinhala and Tamil; larger amounts throw `RangeError`. |
+| Date of birth | `YYYY-MM-DD`, `YYYY/MM/DD`, `DD-MM-YYYY`, `DD/MM/YYYY`, or a `Date` | Month names and timestamps are rejected. Ages use the UTC calendar date. |
+| Schema form data | Plain objects | Other input fails with code `SCHEMA_INVALID_ROOT`. Exceptions thrown by your own rules propagate. |
 
-**NIC day-60 research (12 October 2026):** the library retains its legacy mapping
-of day 60 to February 28 in non-leap years, and February 29 in leap years.
-The [DRP FAQ](https://drp.gov.lk/en/faq.php) explains conversion to 12-digit numbers
-but does not establish this day-of-year rule. Targeted DRP searches did not find
-an authoritative rule. Tests preserve compatibility; they do not certify that
-mapping as official. No leap-day policy change has been made without that evidence.
+**Reference data** is deeply frozen; getters such as `getBankByCode` and `getProvinces` return copies you can change safely.
 
-## Performance benchmarks
+**NIC day 060** in a non-leap year maps to 28 February. No official DRP rule has been found yet ([#3](https://github.com/mmsalmanfaris/lanka-validations/issues/3)).
 
-Run `npm run benchmark` after a production build. The dependency-free harness uses
-Node's high-resolution `performance.now()` clock, warms each operation, reports the
-median of repeated samples, exercises CJS and ESM, includes valid/invalid/oversized
-and mixed inputs, measures cold imports in isolated Node processes, and reports a
-post-GC retained-heap estimate. Set `BENCHMARK_BASELINE=/absolute/path/to/dist` to
-compare another build. `BENCHMARK_WARMUP`, `BENCHMARK_ITERATIONS`,
-`BENCHMARK_SAMPLES`, and `BENCHMARK_COLD_SAMPLES` control the workload.
+---
 
-The 12 October 2026 comparison on Node 25.4.0 used 20,000 warm-up calls and repeated
-medians of 200,000 calls for focused hot-operation checks. Precomputed trilingual
-administrative indexes changed last-district lookup from 3.04 to 0.13 µs/op in CJS
-(23×) and 3.08 to 0.10 µs/op in ESM (32×). Missing-district lookup changed from
-3.41 to 0.08 µs/op in CJS (41×) and 3.29 to 0.05 µs/op in ESM (60×). Successful
-detailed NIC validation improved about 1.2–1.3× and phone validation about 1.1–1.2×
-after eliminating duplicate normalization on their success paths. These are local
-synthetic measurements, not production guarantees or release gates.
+## Performance
 
-Tree-shaking was rechecked with esbuild after adding the indexes. Importing only
-`isValidNic` produced a 969-byte gzip bundle from the root entry and 967 bytes from
-the `/nic` entry; the administrative index was absent from both. The unminified CJS
-root grew by 218 bytes and the administrative entry by 308 bytes relative to the
-saved pre-index build.
+- Typical validations take under a microsecond (about 0.4 to 0.9 µs for phone and NIC); district lookups take about 0.1 µs after indexing (23 to 60 times faster than 1.x).
+- Importing only `isValidNic` adds about 1 kB gzipped; CI fails if an entry point grows past its [size budget](.size-limit.json).
+- Lookup indexes hold only public administrative names, never NICs, phone numbers, or other personal data.
 
-The indexes contain only public administrative aliases. They do not cache supplied
-NICs, phone numbers, or other personal identifiers. All code paths preserve the
-existing detached-copy behavior of lookup results. The benchmark implementation uses
-[Node's performance clock](https://nodejs.org/api/perf_hooks.html) and
-[memory-usage API](https://nodejs.org/api/process.html#processmemoryusage).
+Run `npm run benchmark` to measure on your machine. These are local measurements, not guarantees.
+
+---
 
 ## Data Sources
 
