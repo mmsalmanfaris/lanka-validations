@@ -23,6 +23,13 @@ upgrading.
 - Province and district getters return immutable copies typed as
   `ReadonlyProvinceInfo` / readonly records. Mutating a returned record is a type
   error, and mutation no longer affects later lookups.
+- All exported reference tables (`MOBILE_PREFIXES`, `AREA_CODES`,
+  `FIXED_OPERATOR_DIGITS`, `SRI_LANKA_SHORT_CODES`, `POSTAL_PREFIXES`, `MAJOR_CITIES`,
+  `DMT_LICENSE_CATEGORIES`, `VEHICLE_PROVINCES`, and the nested entries of
+  `VALIDATION_MESSAGES` and `REFERENCE_DATA_METADATA`) are deeply frozen and typed
+  `Readonly`. Writing to them is a type error and throws in strict mode. Previously,
+  any code in the process could change validation results, for example by adding a
+  mobile prefix.
 - Validators reject non-scalar input (arrays, objects) instead of coercing it to a
   string. Only strings and finite numbers are accepted. For example,
   `isValidPhone(['0771234567'])` now returns `false`.
@@ -32,6 +39,10 @@ upgrading.
   `YYYY-MM-DD`, `YYYY/MM/DD`, `DD-MM-YYYY` and `DD/MM/YYYY`. Free-form strings
   such as `'March 5 2000'` are rejected. Date-only comparisons and ages use the
   UTC calendar date.
+- `isValidTIN` / `validateTIN` no longer accept an NIC number as a TIN. IRD issues a
+  separate 9- or 10-digit TIN to individuals who register using their NIC; no IRD
+  source supports treating the NIC itself as a TIN. Validate NIC fields with
+  `isValidNic` instead.
 - Phone validation rejects strings containing letters or other disallowed
   characters (for example, `'abc119xyz'` is no longer read as short code `119`).
 - Postal code validation rejects letters and non-integer numbers (for example,
@@ -61,12 +72,25 @@ upgrading.
 - Schema validators infer their output type from the rules passed to
   `createSchemaValidator`.
 - `MAX_INPUT_LENGTH` and `MAX_LKR_AMOUNT` constants.
+- `lanka-validations/package.json` is exported for tools that read package metadata.
 
 ### Fixed
 
+- ESM consumers using `moduleResolution: node16`/`nodenext` now get ESM type
+  declarations (`.d.mts`) instead of CommonJS ones, so default and named imports
+  type-check correctly.
+- Subpath imports such as `lanka-validations/nic` now resolve types under the
+  legacy `moduleResolution: node` (node10) setting.
 - Bank code validation and lookup no longer accept inherited object property
   names such as `'__proto__'` or `'constructor'`.
+- `maskNic`, `maskPhone` and `maskBankAccount` revealed the full value when
+  `visibleDigits` was `0`, negative, or `NaN`. They now reveal nothing in those cases
+  and round fractional values down.
 - Validators no longer throw on objects with a broken `toString`.
+- `getLicenseCategoryInfo` and `getAllLicenseCategories` return copies, so changing
+  a returned record no longer affects later lookups.
+- `getReferenceDataMetadata(table)` is typed to return a single table's metadata,
+  instead of a union that callers had to narrow.
 - `lkrToWords` rounds to cents once and carries into rupees:
   `lkrToWords(1.999)` returns `'Two Rupees Only'` instead of
   `'One Rupee and One Hundred Cents Only'`.
