@@ -5,6 +5,40 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-10-14
+
+Documentation release: no changes to validation behavior or the public API. Upgrading
+from 2.0.0 needs no code changes.
+
+### Added
+
+- `llms.txt` ships in the package and on the docs site, with `llms-full.txt` (llms.txt,
+  README, and changelog in one file), so AI coding assistants can read the API, its
+  conventions, and its limits.
+- Every public function documents its parameters and return value and has a
+  `@example`, shown in editor hovers and the API reference. Each entry point
+  (`lanka-validations/nic`, `/phone`, and so on) has an overview with its import path.
+- README: a Quick Start, a "Which Function Do I Use?" task table, examples for Zod,
+  React Hook Form, and Express, and an FAQ.
+- API reference: each area is its own module page; header links to GitHub, npm, and
+  the changelog; the changelog is published on the site; search covers descriptions.
+
+### Changed
+
+- The npm `homepage` points to the API reference.
+- README, `llms.txt`, and TSDoc examples now run as tests, so documented results
+  always match the library.
+- Shortened the README's input-rules and performance sections and moved Data Sources
+  near the end.
+
+### Fixed
+
+- `formatNic` documentation showed the wrong output for the `spaced-old` and
+  `spaced-new` styles. The function itself is unchanged.
+- The README's `calculateAge` example depended on the current date.
+- The bundle-size badge, which could not measure the package, now shows the
+  `lanka-validations/nic` size; a Socket badge was added.
+
 ## [2.0.0] - 2026-10-14
 
 This release hardens input validation. Some inputs that 1.0.0 accepted are now
@@ -112,5 +146,6 @@ upgrading.
   words), date of birth, gender, postal codes, CBSL bank codes, TIN/VAT and
   administrative divisions, plus a schema/form validator.
 
-[2.0.0]: https://github.com/mmsalmanfaris/lanka-validations/compare/1.0.0...HEAD
+[2.1.0]: https://github.com/mmsalmanfaris/lanka-validations/compare/2.0.0...2.1.0
+[2.0.0]: https://github.com/mmsalmanfaris/lanka-validations/compare/1.0.0...2.0.0
 [1.0.0]: https://github.com/mmsalmanfaris/lanka-validations/releases/tag/1.0.0
