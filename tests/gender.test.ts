@@ -21,6 +21,11 @@ describe('Gender Module', () => {
     expect(normalizeGender('பெண்')).toBe('female');
   });
 
+  it('returns null for empty input', () => {
+    expect(normalizeGender('')).toBeNull();
+    expect(normalizeGender(undefined)).toBeNull();
+  });
+
   it('validates gender correctly', () => {
     expect(isValidGender('male')).toBe(true);
     expect(isValidGender('female')).toBe(true);
@@ -37,6 +42,11 @@ describe('Gender Module', () => {
     // 856234567X -> days 623 > 500 -> female
     expect(matchesNicGender('female', '856234567X')).toBe(true);
     expect(matchesNicGender('male', '856234567X')).toBe(false);
+  });
+
+  it('does not match when either the gender or the NIC is invalid', () => {
+    expect(matchesNicGender('other', '921234567V')).toBe(false);
+    expect(matchesNicGender('male', 'invalid')).toBe(false);
   });
 
   it('returns structured validation result', () => {
