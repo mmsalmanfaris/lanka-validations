@@ -89,6 +89,15 @@ describe('deterministic NIC dates', () => {
     expect(parseNic('200000104567', opts)?.age).toBe(24);
     expect(isValidOldNic('000014567V', opts)).toBe(true);
   });
+  it('counts age in full years before and on the birthday', () => {
+    // 921234567V -> 1992-05-02
+    const earlierMonth = { referenceDate: new Date('2026-01-15T00:00:00Z') };
+    const dayBefore = { referenceDate: new Date('2026-05-01T00:00:00Z') };
+    const birthday = { referenceDate: new Date('2026-05-02T00:00:00Z') };
+    expect(parseNic('921234567V', earlierMonth)?.age).toBe(33);
+    expect(parseNic('921234567V', dayBefore)?.age).toBe(33);
+    expect(parseNic('921234567V', birthday)?.age).toBe(34);
+  });
   it('rejects an invalid reference date', () => {
     const opts = { referenceDate: new Date(NaN) };
     expect(parseNic(nic, opts)).toBeNull();
