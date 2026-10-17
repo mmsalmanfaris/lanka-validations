@@ -83,6 +83,10 @@ describe('Currency (LKR) Module', () => {
       expect(lkrToWords(0)).toBe('Zero Rupees Only');
     });
 
+    it('supports a custom suffix', () => {
+      expect(lkrToWords(1500, { suffix: '' })).toBe('One Thousand Five Hundred Rupees');
+    });
+
     it('converts to Sinhala words', () => {
       const wordsSi = lkrToWords(1500, { language: 'si' });
       expect(wordsSi).toContain('රුපියල්');
@@ -93,6 +97,19 @@ describe('Currency (LKR) Module', () => {
       expect(withCentsSi).toContain('ශත');
     });
 
+    it('converts zero, thousands, and negatives to Sinhala words', () => {
+      expect(lkrToWords(0, { language: 'si' })).toBe('රුපියල් බිංදුවයි');
+      expect(lkrToWords(1000, { language: 'si' })).toBe('රුපියල් එක්දහස්යි');
+      expect(lkrToWords(-5, { language: 'si' })).toBe('සෘණ රුපියල් පහයි');
+    });
+
+    it('ends Sinhala amounts with the යි suffix', () => {
+      expect(lkrToWords(1, { language: 'si' })).toBe('රුපියල් එකයි');
+      expect(lkrToWords(3, { language: 'si' })).toBe('රුපියල් තුනයි');
+      expect(lkrToWords(4, { language: 'si' })).toBe('රුපියල් හතරයි');
+      expect(lkrToWords(8, { language: 'si' })).toBe('රුපියල් අටයි');
+    });
+
     it('converts to Tamil words', () => {
       const wordsTa = lkrToWords(1500, { language: 'ta' });
       expect(wordsTa).toContain('ஆயிரத்து');
@@ -100,6 +117,14 @@ describe('Currency (LKR) Module', () => {
 
       const withCentsTa = lkrToWords(1500.5, { language: 'ta' });
       expect(withCentsTa).toContain('சதம்');
+    });
+
+    it('converts zero, thousands, and negatives to Tamil words', () => {
+      expect(lkrToWords(0, { language: 'ta' })).toBe('பூஜ்ஜியம் ரூபாய்');
+      expect(lkrToWords(1000, { language: 'ta' })).toBe('ஆயிரம் ரூபாய்');
+      expect(lkrToWords(2000, { language: 'ta' })).toBe('இரண்டு ஆயிரம் ரூபாய்');
+      expect(lkrToWords(2500, { language: 'ta' })).toBe('இரண்டு ஆயிரத்து ஐந்நூறு ரூபாய்');
+      expect(lkrToWords(-5, { language: 'ta' })).toBe('கழித்தல் ஐந்து ரூபாய்');
     });
   });
 
