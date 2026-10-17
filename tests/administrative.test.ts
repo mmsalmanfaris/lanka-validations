@@ -24,6 +24,8 @@ describe('Administrative Divisions Module', () => {
     }
     expect(getProvinceInfo('missing')).toBeNull();
     expect(getDistrictInfo('missing')).toBeNull();
+    expect(getDistrictInfo('')).toBeNull();
+    expect(getDistrictInfo(null)).toBeNull();
   });
   it('validates provinces by code, English, Sinhala, and Tamil names', () => {
     expect(isValidProvince('WP')).toBe(true);

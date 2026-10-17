@@ -29,6 +29,23 @@ describe('Passport Module', () => {
     expect(isValidPassport('P1234567')).toBe(true);
   });
 
+  it('classifies e-Passport prefixes (D, O, E, unknown)', () => {
+    const diplomatic = parsePassport('D12345678');
+    expect(diplomatic?.type).toBe('diplomatic');
+    expect(diplomatic?.prefix).toBe('D');
+    expect(diplomatic?.number).toBe('12345678');
+    expect(diplomatic?.isEPassport).toBe(true);
+
+    expect(parsePassport('O12345678')?.type).toBe('official');
+
+    const emergency = parsePassport('E1234567');
+    expect(emergency?.type).toBe('emergency');
+    expect(emergency?.isEPassport).toBe(true);
+
+    expect(isValidPassport('XY1234567')).toBe(true);
+    expect(parsePassport('XY1234567')?.type).toBe('unknown');
+  });
+
   it('rejects invalid passports', () => {
     expect(isValidPassport('')).toBe(false);
     expect(isValidPassport('1234567')).toBe(false);

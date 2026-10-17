@@ -76,11 +76,17 @@ export function calculateAge(dobInput: unknown, referenceDate?: Date): number | 
   const dob = parseDob(dobInput);
   if (!dob) return null;
 
-  const ref = referenceDate ? new Date(referenceDate) : new Date();
-  let age = ref.getUTCFullYear() - dob.getUTCFullYear();
-  const m = ref.getUTCMonth() - dob.getUTCMonth();
+  return ageInFullYears(dob, referenceDate ?? new Date());
+}
 
-  if (m < 0 || (m === 0 && ref.getUTCDate() < dob.getUTCDate())) {
+function ageInFullYears(dob: Date, referenceDate: Date): number {
+  let age = referenceDate.getUTCFullYear() - dob.getUTCFullYear();
+  const monthDifference = referenceDate.getUTCMonth() - dob.getUTCMonth();
+
+  if (
+    monthDifference < 0 ||
+    (monthDifference === 0 && referenceDate.getUTCDate() < dob.getUTCDate())
+  ) {
     age--;
   }
 
@@ -111,8 +117,7 @@ export function isValidDob(input: unknown, options?: DobOptions): boolean {
     return false;
   }
 
-  const age = calculateAge(dob, ref);
-  if (age === null) return false;
+  const age = ageInFullYears(dob, ref);
 
   if (options?.minAge !== undefined && age < options.minAge) {
     return false;
@@ -185,10 +190,7 @@ export function validateDob(
     return createFailure('Date of Birth cannot be in the future.', 'DOB_FUTURE');
   }
 
-  const age = calculateAge(dob, ref);
-  if (age === null) {
-    return createFailure('Unable to compute age from Date of Birth.', 'DOB_INVALID');
-  }
+  const age = ageInFullYears(dob, ref);
 
   if (age > 125) {
     return createFailure('Date of Birth exceeds realistic human lifespan.', 'DOB_TOO_OLD');

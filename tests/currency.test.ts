@@ -48,10 +48,30 @@ describe('Currency (LKR) Module', () => {
     it('formats with South Asian lakh scale', () => {
       expect(formatLKR(1500000, { lakhScale: true })).toBe('Rs. 15,00,000.00');
       expect(formatLKR(1234567.89, { lakhScale: true })).toBe('Rs. 12,34,567.89');
+      expect(formatLKR(500, { lakhScale: true })).toBe('Rs. 500.00');
+    });
+
+    it('formats negative amounts with lakh scale', () => {
+      expect(formatLKR(-1500000, { lakhScale: true })).toBe('Rs. -15,00,000.00');
+      expect(formatLKR(-500, { lakhScale: true })).toBe('Rs. -500.00');
+    });
+
+    it('formats lakh scale without decimals', () => {
+      expect(formatLKR(500, { lakhScale: true, decimals: 0 })).toBe('Rs. 500');
+      expect(formatLKR(1500000, { lakhScale: true, decimals: 0 })).toBe('Rs. 15,00,000');
+    });
+
+    it('formats without grouping', () => {
+      expect(formatLKR(1500000, { useGrouping: false })).toBe('Rs. 1500000.00');
     });
 
     it('supports symbol suffix', () => {
       expect(formatLKR(500, { symbol: 'LKR', symbolPosition: 'suffix' })).toBe('500.00 LKR');
+    });
+
+    it('omits the symbol when it is empty', () => {
+      expect(formatLKR(1500, { symbol: '' })).toBe('1,500.00');
+      expect(formatLKR(1500, { symbol: '', symbolPosition: 'suffix' })).toBe('1,500.00');
     });
   });
 
@@ -61,6 +81,10 @@ describe('Currency (LKR) Module', () => {
       expect(lkrToWords(1500.5)).toBe('One Thousand Five Hundred Rupees and Fifty Cents Only');
       expect(lkrToWords(1)).toBe('One Rupee Only');
       expect(lkrToWords(0)).toBe('Zero Rupees Only');
+    });
+
+    it('supports a custom suffix', () => {
+      expect(lkrToWords(1500, { suffix: '' })).toBe('One Thousand Five Hundred Rupees');
     });
 
     it('converts to Sinhala words', () => {
@@ -73,6 +97,19 @@ describe('Currency (LKR) Module', () => {
       expect(withCentsSi).toContain('ශත');
     });
 
+    it('converts zero, thousands, and negatives to Sinhala words', () => {
+      expect(lkrToWords(0, { language: 'si' })).toBe('රුපියල් බිංදුවයි');
+      expect(lkrToWords(1000, { language: 'si' })).toBe('රුපියල් එක්දහස්යි');
+      expect(lkrToWords(-5, { language: 'si' })).toBe('සෘණ රුපියල් පහයි');
+    });
+
+    it('ends Sinhala amounts with the යි suffix', () => {
+      expect(lkrToWords(1, { language: 'si' })).toBe('රුපියල් එකයි');
+      expect(lkrToWords(3, { language: 'si' })).toBe('රුපියල් තුනයි');
+      expect(lkrToWords(4, { language: 'si' })).toBe('රුපියල් හතරයි');
+      expect(lkrToWords(8, { language: 'si' })).toBe('රුපියල් අටයි');
+    });
+
     it('converts to Tamil words', () => {
       const wordsTa = lkrToWords(1500, { language: 'ta' });
       expect(wordsTa).toContain('ஆயிரத்து');
@@ -80,6 +117,14 @@ describe('Currency (LKR) Module', () => {
 
       const withCentsTa = lkrToWords(1500.5, { language: 'ta' });
       expect(withCentsTa).toContain('சதம்');
+    });
+
+    it('converts zero, thousands, and negatives to Tamil words', () => {
+      expect(lkrToWords(0, { language: 'ta' })).toBe('பூஜ்ஜியம் ரூபாய்');
+      expect(lkrToWords(1000, { language: 'ta' })).toBe('ஆயிரம் ரூபாய்');
+      expect(lkrToWords(2000, { language: 'ta' })).toBe('இரண்டு ஆயிரம் ரூபாய்');
+      expect(lkrToWords(2500, { language: 'ta' })).toBe('இரண்டு ஆயிரத்து ஐந்நூறு ரூபாய்');
+      expect(lkrToWords(-5, { language: 'ta' })).toBe('கழித்தல் ஐந்து ரூபாய்');
     });
   });
 
@@ -92,6 +137,17 @@ describe('Currency (LKR) Module', () => {
       const err = validateLKR('invalid');
       expect(err.isValid).toBe(false);
       expect(err.code).toBe('CURRENCY_INVALID');
+    });
+
+    it('rejects negative amounts unless allowed', () => {
+      expect(validateLKR('-500').code).toBe('CURRENCY_NEGATIVE');
+      expect(validateLKR('(1,500)').code).toBe('CURRENCY_NEGATIVE');
+      expect(validateLKR('-500', { allowNegative: true }).data).toBe(-500);
+    });
+
+    it('applies the maximum amount', () => {
+      expect(validateLKR('300', { max: 200 }).code).toBe('CURRENCY_EXCEEDS_MAX');
+      expect(validateLKR('150', { max: 200 }).data).toBe(150);
     });
   });
 });

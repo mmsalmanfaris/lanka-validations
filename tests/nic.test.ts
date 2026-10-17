@@ -78,6 +78,11 @@ describe('NIC Module', () => {
       expect(convertOldToNewNic('856234567X')).toBe('198562304567');
     });
 
+    it('returns null when the old NIC is invalid or already in the new format', () => {
+      expect(convertOldToNewNic('invalid')).toBeNull();
+      expect(convertOldToNewNic('199212304567')).toBeNull();
+    });
+
     it('converts new NIC back to old NIC for 1900s births with 0-prefixed serial', () => {
       expect(convertNewToOldNic('199212304567')).toBe('921234567V');
       expect(convertNewToOldNic('199212304567', { isVoter: false })).toBe('921234567X');
@@ -93,6 +98,15 @@ describe('NIC Module', () => {
       expect(formatNic('921234567v')).toBe('921234567V');
       expect(formatNic('921234567v', 'spaced-old')).toBe('92123 456 7V');
       expect(formatNic('199212304567', 'spaced-new')).toBe('1992 123 0456 7');
+    });
+
+    it('formats a new NIC in the old format when one exists', () => {
+      expect(formatNic('199212304567', 'old')).toBe('921234567V');
+      expect(formatNic('200162301234', 'old')).toBeNull();
+    });
+
+    it('returns null for an invalid NIC', () => {
+      expect(formatNic('12345')).toBeNull();
     });
   });
 

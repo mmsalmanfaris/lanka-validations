@@ -75,6 +75,26 @@ describe('Phone Module', () => {
       expect(parsed?.type).toBe('fixed');
       expect(parsed?.district).toBe('Galle');
     });
+
+    it('falls back to a generic operator for unassigned subscriber ranges', () => {
+      const parsed = parsePhone('0111234567');
+      expect(parsed?.type).toBe('fixed');
+      expect(parsed?.areaName).toBe('Colombo');
+      expect(parsed?.operator).toBe('Fixed Line');
+    });
+  });
+
+  describe('Toll-free Numbers', () => {
+    it('validates 080 and 019 toll-free numbers', () => {
+      const parsed = parsePhone('0800123456');
+      expect(parsed?.type).toBe('toll_free');
+      expect(parsed?.prefix).toBe('080');
+      expect(parsed?.e164).toBe('+94800123456');
+      expect(parsed?.international).toBe('+94 800123456');
+      expect(parsed?.operator).toBeNull();
+
+      expect(parsePhone('0191234567')?.type).toBe('toll_free');
+    });
   });
 
   describe('Emergency & Short Codes', () => {
@@ -94,6 +114,14 @@ describe('Phone Module', () => {
       expect(formatPhone('0771234567', 'e164')).toBe('+94771234567');
       expect(formatPhone('0771234567', 'national')).toBe('077 123 4567');
       expect(formatPhone('0771234567', 'international')).toBe('+94 77 123 4567');
+    });
+
+    it('formats short codes as tel URIs', () => {
+      expect(formatPhone('119', 'rfc3966')).toBe('tel:119');
+    });
+
+    it('returns null for an invalid phone number', () => {
+      expect(formatPhone('not a phone')).toBeNull();
     });
   });
 

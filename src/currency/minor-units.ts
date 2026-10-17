@@ -103,8 +103,7 @@ export function validateLKRDecimal(
   }
 
   const wholeText = value.split('.')[0]!.replace(/,/g, '');
-  let absoluteMinor =
-    BigInt(wholeText) * 100n + BigInt((fraction.slice(0, 2) || '').padEnd(2, '0') || '0');
+  let absoluteMinor = BigInt(wholeText) * 100n + BigInt(fraction.slice(0, 2).padEnd(2, '0'));
   if (fraction.length > 2 && policy === 'round' && Number(fraction[2]) >= 5) absoluteMinor += 1n;
 
   const max = options.maxMinorUnits ?? MAX_LKR_MINOR_UNITS;

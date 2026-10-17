@@ -6,6 +6,7 @@ import {
   isValidBankCode,
   isValidBranchCode,
   validateBankAccount,
+  validateBankCode,
 } from '../src/bank';
 
 describe('Bank Module', () => {
@@ -21,6 +22,14 @@ describe('Bank Module', () => {
     const boc = getBankByCode('7010');
     expect(boc?.name).toBe('Bank of Ceylon');
     expect(boc?.shortName).toBe('BOC');
+  });
+
+  it('validates bank codes given as numbers', () => {
+    const res = validateBankCode(7010);
+    expect(res.isValid).toBe(true);
+    expect(res.data?.code).toBe('7010');
+
+    expect(validateBankCode(7010.5).code).toBe('BANK_CODE_INVALID_FORMAT');
   });
 
   it('validates branch codes (3 digits)', () => {
@@ -47,5 +56,22 @@ describe('Bank Module', () => {
     expect(res.isValid).toBe(true);
     expect(res.data?.bank?.shortName).toBe('BOC');
     expect(res.data?.branchCode).toBe('001');
+  });
+
+  it('validates a bank account without bank or branch codes', () => {
+    const res = validateBankAccount('1234567890');
+    expect(res.isValid).toBe(true);
+    expect(res.data?.account).toBe('1234567890');
+    expect(res.data?.bank).toBeUndefined();
+    expect(res.data?.branchCode).toBeUndefined();
+  });
+
+  it('pads a numeric branch code', () => {
+    expect(validateBankAccount('1234567890', '7010', 1).data?.branchCode).toBe('001');
+  });
+
+  it('rejects malformed bank account numbers', () => {
+    expect(validateBankAccount('12AB5678').code).toBe('BANK_ACC_INVALID');
+    expect(validateBankAccount('12345').code).toBe('BANK_ACC_INVALID');
   });
 });

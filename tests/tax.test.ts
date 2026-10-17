@@ -17,6 +17,13 @@ describe('Tax Module', () => {
     expect(isValidTIN('abc')).toBe(false);
   });
 
+  it('rejects empty TIN and VAT numbers', () => {
+    expect(isValidTIN('')).toBe(false);
+    expect(validateTIN(' - ').code).toBe('TIN_INVALID');
+    expect(isValidVAT('')).toBe(false);
+    expect(isValidVAT(null)).toBe(false);
+  });
+
   it('validates VAT registration numbers', () => {
     expect(isValidVAT('123456789-7000')).toBe(true);
     expect(isValidVAT('1234567897000')).toBe(true);

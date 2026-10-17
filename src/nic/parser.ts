@@ -127,10 +127,6 @@ export function parseNic(rawNic: unknown, options?: NicOptions): NicInfo | null 
     dayOfYear = rawDays;
   }
 
-  if (dayOfYear < 1 || dayOfYear > 366) {
-    return null;
-  }
-
   const dateParts = parseNicDayOfYear(year, dayOfYear);
   if (!dateParts) return null;
 
