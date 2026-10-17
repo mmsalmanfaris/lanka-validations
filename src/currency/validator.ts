@@ -60,13 +60,11 @@ export function validateLKR(
   input: unknown,
   options?: LkrValidationOptions,
 ): ValidationResult<number> {
-  const str = cleanString(input);
-  if (!str && typeof input !== 'number') {
-    return createFailure('Currency amount is required.', 'CURRENCY_REQUIRED');
-  }
-
   const num = parseLKR(input);
   if (num === null) {
+    if (!cleanString(input) && typeof input !== 'number') {
+      return createFailure('Currency amount is required.', 'CURRENCY_REQUIRED');
+    }
     return createFailure(
       'Invalid Sri Lankan Rupee amount format. Example: "Rs. 1,500.00" or "1500".',
       'CURRENCY_INVALID',
