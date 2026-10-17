@@ -72,8 +72,7 @@ function englishIntegerToWords(n: number): string {
     if (rem >= scale.value) {
       const count = Math.floor(rem / scale.value);
       rem %= scale.value;
-      const part = englishNumberUnderThousand(count);
-      result += part ? part + (scale.name ? ' ' + scale.name : '') + ' ' : '';
+      result += englishNumberUnderThousand(count) + (scale.name ? ' ' + scale.name : '') + ' ';
     }
   }
 
@@ -122,7 +121,6 @@ const SI_HUNDREDS = [
 ];
 
 function sinhalaNumberUnderThousand(n: number): string {
-  if (n === 0) return '';
   let s = '';
   if (n >= 100) {
     s += SI_HUNDREDS[Math.floor(n / 100)] + ' ';
@@ -253,7 +251,6 @@ const TA_HUNDREDS_PREFIX = [
 ];
 
 function tamilNumberUnderThousand(n: number): string {
-  if (n === 0) return '';
   let s = '';
   if (n >= 100) {
     const h = Math.floor(n / 100);
@@ -272,7 +269,7 @@ function tamilNumberUnderThousand(n: number): string {
     } else {
       s += TA_TENS_PREFIX[tens]! + TA_ONES[ones]!;
     }
-  } else if (n > 0) {
+  } else {
     s += TA_ONES[n];
   }
 
