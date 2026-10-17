@@ -8,13 +8,13 @@ export default defineConfig({
       provider: 'v8',
       include: ['src/**/*.ts'],
       reporter: ['text', 'lcov', 'json-summary'],
-      // Property tests use a random seed, so coverage moves by up to ~0.5% between runs.
-      // Keep each floor about that far below the lowest observed value; raise them as tests are added.
+      // The example tests alone reach full coverage, so the property tests' random seed
+      // cannot push any metric below these floors.
       thresholds: {
-        statements: 95,
-        branches: 90.5,
+        statements: 100,
+        branches: 100,
         functions: 100,
-        lines: 96.3,
+        lines: 100,
       },
     },
   },
