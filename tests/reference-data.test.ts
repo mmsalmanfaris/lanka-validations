@@ -18,4 +18,11 @@ describe('reference-data metadata', () => {
     copy.coverage = 'changed';
     expect(REFERENCE_DATA_METADATA.PROVINCES.coverage).not.toBe('changed');
   });
+
+  it('returns every table when called without a key', () => {
+    const all = getReferenceDataMetadata();
+    expect(Object.keys(all)).toHaveLength(11);
+    expect(all).toEqual(REFERENCE_DATA_METADATA);
+    expect(all).not.toBe(REFERENCE_DATA_METADATA);
+  });
 });

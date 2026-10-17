@@ -54,4 +54,9 @@ describe('Driving License Module', () => {
     expect(validateDrivingLicense('').isValid).toBe(false);
     expect(validateDrivingLicense('').code).toBe('LICENSE_REQUIRED');
   });
+
+  it('returns null when parsing an empty license number', () => {
+    expect(parseDrivingLicense('')).toBeNull();
+    expect(parseDrivingLicense(' - ')).toBeNull();
+  });
 });
