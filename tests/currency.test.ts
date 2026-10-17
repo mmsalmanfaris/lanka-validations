@@ -48,10 +48,30 @@ describe('Currency (LKR) Module', () => {
     it('formats with South Asian lakh scale', () => {
       expect(formatLKR(1500000, { lakhScale: true })).toBe('Rs. 15,00,000.00');
       expect(formatLKR(1234567.89, { lakhScale: true })).toBe('Rs. 12,34,567.89');
+      expect(formatLKR(500, { lakhScale: true })).toBe('Rs. 500.00');
+    });
+
+    it('formats negative amounts with lakh scale', () => {
+      expect(formatLKR(-1500000, { lakhScale: true })).toBe('Rs. -15,00,000.00');
+      expect(formatLKR(-500, { lakhScale: true })).toBe('Rs. -500.00');
+    });
+
+    it('formats lakh scale without decimals', () => {
+      expect(formatLKR(500, { lakhScale: true, decimals: 0 })).toBe('Rs. 500');
+      expect(formatLKR(1500000, { lakhScale: true, decimals: 0 })).toBe('Rs. 15,00,000');
+    });
+
+    it('formats without grouping', () => {
+      expect(formatLKR(1500000, { useGrouping: false })).toBe('Rs. 1500000.00');
     });
 
     it('supports symbol suffix', () => {
       expect(formatLKR(500, { symbol: 'LKR', symbolPosition: 'suffix' })).toBe('500.00 LKR');
+    });
+
+    it('omits the symbol when it is empty', () => {
+      expect(formatLKR(1500, { symbol: '' })).toBe('1,500.00');
+      expect(formatLKR(1500, { symbol: '', symbolPosition: 'suffix' })).toBe('1,500.00');
     });
   });
 
@@ -92,6 +112,17 @@ describe('Currency (LKR) Module', () => {
       const err = validateLKR('invalid');
       expect(err.isValid).toBe(false);
       expect(err.code).toBe('CURRENCY_INVALID');
+    });
+
+    it('rejects negative amounts unless allowed', () => {
+      expect(validateLKR('-500').code).toBe('CURRENCY_NEGATIVE');
+      expect(validateLKR('(1,500)').code).toBe('CURRENCY_NEGATIVE');
+      expect(validateLKR('-500', { allowNegative: true }).data).toBe(-500);
+    });
+
+    it('applies the maximum amount', () => {
+      expect(validateLKR('300', { max: 200 }).code).toBe('CURRENCY_EXCEEDS_MAX');
+      expect(validateLKR('150', { max: 200 }).data).toBe(150);
     });
   });
 });
