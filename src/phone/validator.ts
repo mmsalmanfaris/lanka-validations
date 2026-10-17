@@ -1,6 +1,6 @@
-import { cleanString, createFailure, createSuccess } from '../common/utils';
+import { createFailure, createSuccess } from '../common/utils';
 import type { ValidationResult } from '../common/types';
-import { normalizePhoneNumber, parsePhone } from './parser';
+import { decodePhone, parsePhone } from './parser';
 import type { PhoneInfo } from './types';
 
 /**
@@ -102,20 +102,18 @@ export function isValidShortCode(code: unknown): boolean {
  * ```
  */
 export function validatePhone(phone: unknown): ValidationResult<PhoneInfo> {
-  const info = parsePhone(phone);
-  if (info) return createSuccess(info);
+  const result = decodePhone(phone);
+  if (typeof result !== 'string') return createSuccess(result);
 
-  if (!cleanString(phone)) {
-    return createFailure('Phone number is required.', 'PHONE_REQUIRED');
+  switch (result) {
+    case 'PHONE_REQUIRED':
+      return createFailure('Phone number is required.', result);
+    case 'PHONE_UNSUPPORTED':
+      return createFailure(
+        'Phone number prefix or short code is not in the bundled reference data.',
+        result,
+      );
+    case 'PHONE_INVALID':
+      return createFailure('Invalid Sri Lankan phone number format.', result);
   }
-
-  const cleaned = cleanString(phone);
-  const normalized = normalizePhoneNumber(cleaned);
-  if (/^0[0-9]{9}$/.test(normalized) || /^[0-9]{3,4}$/.test(cleaned)) {
-    return createFailure(
-      'Phone number prefix or short code is not in the bundled reference data.',
-      'PHONE_UNSUPPORTED',
-    );
-  }
-  return createFailure('Invalid Sri Lankan phone number format.', 'PHONE_INVALID');
 }

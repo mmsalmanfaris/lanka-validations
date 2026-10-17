@@ -51,12 +51,25 @@ export function normalizePhoneNumber(raw: unknown): string {
  * ```
  */
 export function parsePhone(rawPhone: unknown): PhoneInfo | null {
+  const result = decodePhone(rawPhone);
+  return typeof result === 'string' ? null : result;
+}
+
+/** Error code for a phone number that is invalid. */
+export type PhoneFailureCode = 'PHONE_REQUIRED' | 'PHONE_UNSUPPORTED' | 'PHONE_INVALID';
+
+/**
+ * Parses a phone number in a single pass, returning its details or an error code.
+ * Shared by `parsePhone` and `validatePhone`; not part of the public API.
+ */
+export function decodePhone(rawPhone: unknown): PhoneInfo | PhoneFailureCode {
   const raw = cleanString(rawPhone);
-  if (!raw) return null;
+  if (!raw) return 'PHONE_REQUIRED';
 
   // Check short codes first (119, 1990, etc.)
   const digitsOnly = raw;
-  if (/^[0-9]{3,4}$/.test(digitsOnly) && Object.hasOwn(SRI_LANKA_SHORT_CODES, digitsOnly)) {
+  const looksLikeShortCode = /^[0-9]{3,4}$/.test(digitsOnly);
+  if (looksLikeShortCode && Object.hasOwn(SRI_LANKA_SHORT_CODES, digitsOnly)) {
     return {
       raw,
       normalized: digitsOnly,
@@ -75,7 +88,7 @@ export function parsePhone(rawPhone: unknown): PhoneInfo | null {
 
   // Must be 10 digits starting with 0
   if (!/^0\d{9}$/.test(normalized)) {
-    return null;
+    return looksLikeShortCode ? 'PHONE_UNSUPPORTED' : 'PHONE_INVALID';
   }
 
   const prefix3 = normalized.slice(0, 3);
@@ -141,5 +154,5 @@ export function parsePhone(rawPhone: unknown): PhoneInfo | null {
     };
   }
 
-  return null;
+  return 'PHONE_UNSUPPORTED';
 }

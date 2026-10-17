@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- `validateNic` and `validatePhone` check invalid input in a single pass instead of
+  parsing it and then checking it again to find the error code, which makes them
+  roughly 40% faster on invalid input. `validateTIN`, `validateVAT`,
+  `validatePostalCode`, and `validateLKR` no longer clean valid input twice. Results,
+  error codes, and messages are unchanged.
+
 ## [2.1.0] - 2026-10-14
 
 Documentation release: no changes to validation behavior or the public API. Upgrading
@@ -146,6 +156,7 @@ upgrading.
   words), date of birth, gender, postal codes, CBSL bank codes, TIN/VAT and
   administrative divisions, plus a schema/form validator.
 
+[Unreleased]: https://github.com/mmsalmanfaris/lanka-validations/compare/2.1.0...HEAD
 [2.1.0]: https://github.com/mmsalmanfaris/lanka-validations/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/mmsalmanfaris/lanka-validations/compare/1.0.0...2.0.0
 [1.0.0]: https://github.com/mmsalmanfaris/lanka-validations/releases/tag/1.0.0

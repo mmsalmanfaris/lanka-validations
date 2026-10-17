@@ -1,6 +1,6 @@
-import { cleanString, createFailure, createSuccess } from '../common/utils';
+import { createFailure, createSuccess } from '../common/utils';
 import type { ValidationResult } from '../common/types';
-import { parseNic } from './parser';
+import { decodeNic, parseNic } from './parser';
 import type { NicInfo, NicOptions } from './types';
 
 /**
@@ -71,52 +71,30 @@ export function isValidNewNic(nic: unknown, options?: NicOptions): boolean {
  * ```
  */
 export function validateNic(rawNic: unknown, options?: NicOptions): ValidationResult<NicInfo> {
-  const referenceDate = options?.referenceDate ?? new Date();
-  const info = parseNic(rawNic, { referenceDate });
-  if (info) return createSuccess(info);
+  const result = decodeNic(rawNic, options);
+  if (!('code' in result)) return createSuccess(result);
 
-  const cleaned = cleanString(rawNic).toUpperCase();
-
-  if (!cleaned) {
-    return createFailure('NIC number is required', 'NIC_REQUIRED');
+  switch (result.code) {
+    case 'NIC_REQUIRED':
+      return createFailure('NIC number is required', result.code);
+    case 'NIC_INVALID_FORMAT':
+      return createFailure(
+        'Invalid NIC format. Must be 9 digits followed by V/X or 12 digits.',
+        result.code,
+      );
+    case 'NIC_INVALID_OPTIONS':
+      return createFailure('Invalid NIC reference date.', result.code);
+    case 'NIC_INVALID_YEAR':
+      return createFailure(
+        `Invalid birth year in NIC: ${result.year}. Must be between 1850 and ${result.currentYear}.`,
+        result.code,
+      );
+    case 'NIC_INVALID_DAY':
+      return createFailure(
+        `Invalid day of year in NIC: ${result.rawDays}. Must be 001-366 (male) or 501-866 (female).`,
+        result.code,
+      );
+    case 'NIC_FUTURE_DOB':
+      return createFailure('Date of birth encoded in NIC is in the future.', result.code);
   }
-
-  const isOldPattern = /^\d{9}[VX]$/.test(cleaned);
-  const isNewPattern = /^\d{12}$/.test(cleaned);
-
-  if (!isOldPattern && !isNewPattern) {
-    return createFailure(
-      'Invalid NIC format. Must be 9 digits followed by V/X or 12 digits.',
-      'NIC_INVALID_FORMAT',
-    );
-  }
-
-  if (!(referenceDate instanceof Date) || !Number.isFinite(referenceDate.getTime())) {
-    return createFailure('Invalid NIC reference date.', 'NIC_INVALID_OPTIONS');
-  }
-  const rawDays = isOldPattern
-    ? parseInt(cleaned.substring(2, 5), 10)
-    : parseInt(cleaned.substring(4, 7), 10);
-
-  const year = isOldPattern
-    ? 1900 + parseInt(cleaned.substring(0, 2), 10)
-    : parseInt(cleaned.substring(0, 4), 10);
-
-  const currentYear = referenceDate.getUTCFullYear();
-  if (year > currentYear || year < 1850) {
-    return createFailure(
-      `Invalid birth year in NIC: ${year}. Must be between 1850 and ${currentYear}.`,
-      'NIC_INVALID_YEAR',
-    );
-  }
-
-  const dayOfYear = rawDays > 500 ? rawDays - 500 : rawDays;
-  if (dayOfYear < 1 || dayOfYear > 366) {
-    return createFailure(
-      `Invalid day of year in NIC: ${rawDays}. Must be 001-366 (male) or 501-866 (female).`,
-      'NIC_INVALID_DAY',
-    );
-  }
-
-  return createFailure('Date of birth encoded in NIC is in the future.', 'NIC_FUTURE_DOB');
 }
