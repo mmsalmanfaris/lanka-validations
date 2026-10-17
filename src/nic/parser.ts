@@ -64,12 +64,24 @@ export function parseNicDayOfYear(
  * ```
  */
 export function parseNic(rawNic: unknown, options?: NicOptions): NicInfo | null {
-  const cleaned = cleanString(rawNic).toUpperCase();
-  if (!cleaned) return null;
+  const result = decodeNic(rawNic, options);
+  return 'code' in result ? null : result;
+}
 
-  const today = options?.referenceDate ?? new Date();
-  if (!(today instanceof Date) || !Number.isFinite(today.getTime())) return null;
-  const currentYear = today.getUTCFullYear();
+/** Why an NIC is invalid, with the values `validateNic` needs for its error message. */
+export type NicFailure =
+  | { code: 'NIC_REQUIRED' | 'NIC_INVALID_FORMAT' | 'NIC_INVALID_OPTIONS' | 'NIC_FUTURE_DOB' }
+  | { code: 'NIC_INVALID_YEAR'; year: number; currentYear: number }
+  | { code: 'NIC_INVALID_DAY'; rawDays: number };
+
+/**
+ * Decodes an NIC in a single pass, returning its details or the reason it is invalid.
+ * Shared by `parseNic` and `validateNic`; not part of the public API.
+ */
+export function decodeNic(rawNic: unknown, options?: NicOptions): NicInfo | NicFailure {
+  const cleaned = cleanString(rawNic).toUpperCase();
+  if (!cleaned) return { code: 'NIC_REQUIRED' };
+
   let format: NicFormat;
   let year: number;
   let rawDays: number;
@@ -107,12 +119,18 @@ export function parseNic(rawNic: unknown, options?: NicOptions): NicInfo | null 
       oldNic = `${shortYear}${daysStr}${oldSerial}${checkDigit}V`;
     }
   } else {
-    return null;
+    return { code: 'NIC_INVALID_FORMAT' };
+  }
+
+  const today = options?.referenceDate ?? new Date();
+  if (!(today instanceof Date) || !Number.isFinite(today.getTime())) {
+    return { code: 'NIC_INVALID_OPTIONS' };
   }
 
   // Validate year range
+  const currentYear = today.getUTCFullYear();
   if (year < 1850 || year > currentYear) {
-    return null;
+    return { code: 'NIC_INVALID_YEAR', year, currentYear };
   }
 
   // Determine gender and actual day of year
@@ -128,13 +146,13 @@ export function parseNic(rawNic: unknown, options?: NicOptions): NicInfo | null 
   }
 
   const dateParts = parseNicDayOfYear(year, dayOfYear);
-  if (!dateParts) return null;
+  if (!dateParts) return { code: 'NIC_INVALID_DAY', rawDays };
 
   const dob = new Date(Date.UTC(year, dateParts.month - 1, dateParts.day));
   const dobString = `${year}-${padZero(dateParts.month, 2)}-${padZero(dateParts.day, 2)}`;
 
   // Calculate age
-  if (dob.getTime() > today.getTime()) return null;
+  if (dob.getTime() > today.getTime()) return { code: 'NIC_FUTURE_DOB' };
   let age = today.getUTCFullYear() - year;
   const birthMonth = dateParts.month - 1;
   const currentMonth = today.getUTCMonth();
