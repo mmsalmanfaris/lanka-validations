@@ -75,7 +75,7 @@ export function parseVehiclePlate(rawPlate: unknown): VehiclePlateInfo | null {
     const provinceCode = modernEnglishMatch[1] ?? null;
     const series = modernEnglishMatch[2]!;
     const number = modernEnglishMatch[3]!;
-    const provinceName = provinceCode ? (VEHICLE_PROVINCES[provinceCode] ?? null) : null;
+    const provinceName = provinceCode ? VEHICLE_PROVINCES[provinceCode]! : null;
     const formatted = provinceCode ? `${provinceCode} ${series}-${number}` : `${series}-${number}`;
 
     return {
@@ -97,7 +97,7 @@ export function parseVehiclePlate(rawPlate: unknown): VehiclePlateInfo | null {
     const provinceCode = modernNumericMatch[1] ?? null;
     const series = modernNumericMatch[2]!;
     const number = modernNumericMatch[3]!;
-    const provinceName = provinceCode ? (VEHICLE_PROVINCES[provinceCode] ?? null) : null;
+    const provinceName = provinceCode ? VEHICLE_PROVINCES[provinceCode]! : null;
     const formatted = provinceCode ? `${provinceCode} ${series}-${number}` : `${series}-${number}`;
 
     return {

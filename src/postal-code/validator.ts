@@ -25,11 +25,7 @@ export function normalizePostalCode(input: unknown): string | null {
   const cleaned = cleanString(input);
   if (!/^[0-9]{1,5}$/.test(cleaned)) return null;
 
-  if (cleaned.length <= 5) {
-    return cleaned.padStart(5, '0');
-  }
-
-  return null;
+  return cleaned.padStart(5, '0');
 }
 
 /**
