@@ -8,9 +8,22 @@ import {
   isValidOldNic,
   parseNic,
   validateNic,
+  parseNicDayOfYear,
 } from '../src/nic';
 
 describe('NIC Module', () => {
+  describe('ordinal day-of-year parsing', () => {
+    it('maps day 060 according to whether the birth year is a leap year', () => {
+      expect(parseNicDayOfYear(2001, 60)).toEqual({ month: 3, day: 1 });
+      expect(parseNicDayOfYear(2000, 60)).toEqual({ month: 2, day: 29 });
+    });
+
+    it('rejects day 366 in a common year', () => {
+      expect(parseNicDayOfYear(2001, 366)).toBeNull();
+      expect(parseNicDayOfYear(2000, 366)).toEqual({ month: 12, day: 31 });
+    });
+  });
+
   describe('Old NIC (9 digits + V/X)', () => {
     it('validates a male old NIC', () => {
       // 921234567V -> Year 1992, Day 123 (May 2)

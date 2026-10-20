@@ -1,12 +1,11 @@
 import { cleanString, isLeapYear, padZero } from '../common/utils';
 import type { Gender, NicFormat, NicInfo, NicOptions } from './types';
 
-const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
 /**
- * Parses raw days of year (001 - 866) into month (1-12) and day of month (1-31).
- * Uses the library's legacy 366-day table. The non-leap day-60 mapping
- * remains a compatibility rule pending authoritative DRP confirmation.
+ * Parses an NIC day value, after removing the 500 gender offset, into a calendar date.
+ * Treats the value as the ordinal "Birth day of the year" defined by Gazette
+ * Extraordinary No. 2145/05. Day 060 is 1 March in a common year and
+ * 29 February in a leap year; day 366 is invalid in a common year.
  *
  * @param year - Four-digit birth year.
  * @param dayOfYear - Day of year from the NIC (1 to 366), after removing the 500 offset for women.
@@ -25,11 +24,12 @@ export function parseNicDayOfYear(
     return null;
   }
 
+  const daysInMonth = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   let remaining = dayOfYear;
   let month = 0;
 
-  for (let i = 0; i < DAYS_IN_MONTH.length; i++) {
-    const daysInThisMonth = DAYS_IN_MONTH[i]!;
+  for (let i = 0; i < daysInMonth.length; i++) {
+    const daysInThisMonth = daysInMonth[i]!;
     if (remaining <= daysInThisMonth) {
       month = i + 1;
       break;
@@ -37,14 +37,7 @@ export function parseNicDayOfYear(
     remaining -= daysInThisMonth;
   }
 
-  let day = remaining;
-
-  // Handle Feb 29 for non-leap years
-  if (month === 2 && day === 29 && !isLeapYear(year)) {
-    day = 28;
-  }
-
-  return { month, day };
+  return month === 0 ? null : { month, day: remaining };
 }
 
 /**

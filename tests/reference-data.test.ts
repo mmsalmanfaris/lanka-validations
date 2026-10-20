@@ -3,7 +3,7 @@ import { getReferenceDataMetadata, REFERENCE_DATA_METADATA } from '../src/refere
 
 describe('reference-data metadata', () => {
   it('documents provenance, coverage, verification and updates for every table', () => {
-    expect(Object.keys(REFERENCE_DATA_METADATA)).toHaveLength(11);
+    expect(Object.keys(REFERENCE_DATA_METADATA)).toHaveLength(12);
     for (const entry of Object.values(REFERENCE_DATA_METADATA)) {
       expect(entry.lastVerified).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(entry.coverage).toBeTruthy();
@@ -21,7 +21,7 @@ describe('reference-data metadata', () => {
 
   it('returns every table when called without a key', () => {
     const all = getReferenceDataMetadata();
-    expect(Object.keys(all)).toHaveLength(11);
+    expect(Object.keys(all)).toHaveLength(12);
     expect(all).toEqual(REFERENCE_DATA_METADATA);
     expect(all).not.toBe(REFERENCE_DATA_METADATA);
   });

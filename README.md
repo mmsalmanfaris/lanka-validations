@@ -615,7 +615,7 @@ Full generated documentation for every export: **https://mmsalmanfaris.github.io
 
 **Reference data** is deeply frozen; getters such as `getBankByCode` and `getProvinces` return copies you can change safely.
 
-**NIC day 060** in a non-leap year maps to 28 February. No official DRP rule has been found yet ([#3](https://github.com/mmsalmanfaris/lanka-validations/issues/3)).
+**NIC day 060** is treated as an ordinal day of the birth year: 1 March in a common year and 29 February in a leap year. This follows the official SLIN field definition in Gazette Extraordinary No. 2145/05. The Gazette does not separately illustrate the common-year edge case.
 
 ---
 
@@ -641,7 +641,7 @@ Reference tables are bundled at build time and do not update on their own. `getR
 | Mobile prefixes, area codes, short codes | [TRCSL: National Numbering Plan](https://www.trc.gov.lk/pages_e.php?id=121) | 2026-10-12 | Known prefixes and a curated subset of short codes; an unrecognised prefix is not proof a number is unassigned |
 | Driving licence classes | [Department of Motor Traffic: Driving licence vehicle classes](https://dmt.gov.lk/index.php?Itemid=163&id=46&lang=ta&option=com_content&view=article) | 2026-10-12 | DMT classes, descriptions, and minimum ages used by this package |
 | Vehicle plate provinces | [Department of Motor Traffic: Vehicle Information Service](https://eservices.motortraffic.gov.lk/VehicleInfo/home) | 2026-10-12 | Nine province prefixes; historical plate formats are best-effort |
-| NIC format | Public DRP guidance; no official specification found | — | Old (9 digits + V/X) and new (12 digits) formats. Day-of-year uses the 366-day convention; day 060 in a common year maps to 28 February pending DRP confirmation |
+| NIC / SLIN format | [Gazette Extraordinary No. 2145/05: Electronic Transaction (Sri Lanka Identification Number) Regulation](https://www.documents.gov.lk/view/extra-gazettes/2019/10/2145-05_E.pdf) | 2026-10-20 | The Schedule defines `DDD` as “Birth day of the year.” It is decoded as an ordinal Gregorian day: common-year day 060 is 1 March, leap-year day 060 is 29 February, and common-year day 366 is invalid. The Gazette does not separately illustrate day 060. |
 | TIN / VAT | [IRD: Taxpayer registration guidelines](https://www.ird.gov.lk/en/Shared%20Documents/TPR_Guidelines_1.1_E.pdf) | 2026-10-14 | Digit-pattern checks only; an NIC is not accepted as a TIN |
 
 Found an outdated entry? Please [open an issue](https://github.com/mmsalmanfaris/lanka-validations/issues) with a link to the current official source.
