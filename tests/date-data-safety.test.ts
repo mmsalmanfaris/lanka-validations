@@ -103,10 +103,10 @@ describe('deterministic NIC dates', () => {
     expect(parseNic(nic, opts)).toBeNull();
     expect(validateNic(nic, opts).code).toBe('NIC_INVALID_OPTIONS');
   });
-  it('preserves the unverified legacy non-leap day-60 rule explicitly', () => {
-    expect(parseNicDayOfYear(2001, 60)).toEqual({ month: 2, day: 28 });
+  it('uses ordinal calendar days across the February boundary', () => {
+    expect(parseNicDayOfYear(2001, 60)).toEqual({ month: 3, day: 1 });
     expect(parseNicDayOfYear(2000, 60)).toEqual({ month: 2, day: 29 });
-    expect(parseNicDayOfYear(2001, 61)).toEqual({ month: 3, day: 1 });
+    expect(parseNicDayOfYear(2001, 61)).toEqual({ month: 3, day: 2 });
     expect(parseNicDayOfYear(2001, NaN)).toBeNull();
     expect(parseNicDayOfYear(2001, 60.5)).toBeNull();
   });

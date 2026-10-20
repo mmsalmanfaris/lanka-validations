@@ -31,6 +31,12 @@ const dmtVehicles: ReferenceSource = {
   title: 'Vehicle Information Service',
   url: 'https://eservices.motortraffic.gov.lk/VehicleInfo/home',
 };
+const nicFormatGazette: ReferenceSource = {
+  authority: 'Government of Sri Lanka, Department of Government Printing',
+  title:
+    'Gazette Extraordinary No. 2145/05 — Electronic Transaction (Sri Lanka Identification Number) Regulation',
+  url: 'https://www.documents.gov.lk/view/extra-gazettes/2019/10/2145-05_E.pdf',
+};
 
 function metadata(
   table: ReferenceTableId,
@@ -127,6 +133,26 @@ export const REFERENCE_DATA_METADATA: Readonly<Record<ReferenceTableId, Referenc
         'Accepted historical plate syntax is implementation coverage, not a complete DMT registration database.',
       ],
     ),
+    NIC_FORMAT: {
+      table: 'NIC_FORMAT',
+      version: '2019-10-14',
+      lastVerified: '2026-10-20',
+      coverage:
+        'The official SLIN layout: birth year, ordinal birth day of the year, daily serial number, check digit, and identity-card version.',
+      provenance:
+        'The Schedule to Gazette Extraordinary No. 2145/05 defines DDD as the holder’s “Birth day of the year”.',
+      sources: [nicFormatGazette],
+      limitations: [
+        'The Gazette does not separately illustrate day 060. Its common-year mapping to 1 March follows the ordinary ordinal-day meaning of “Birth day of the year”.',
+        'The Gazette does not document every legacy validation rule used by older NIC cards.',
+      ],
+      updateProcess: [
+        'Check DRP and Department of Government Printing publications for amendments or replacement regulations.',
+        'Confirm any exceptional day allocation with a DRP circular or written determination.',
+        'Update the parser, boundary tests, README, and this verification date together.',
+        'Publish behavior changes in the package changelog.',
+      ],
+    },
   });
 
 /**
@@ -149,7 +175,7 @@ export function getReferenceDataMetadata(table: ReferenceTableId): ReferenceTabl
  *
  * @example
  * ```ts
- * Object.keys(getReferenceDataMetadata()).length; // 11
+ * Object.keys(getReferenceDataMetadata()).length; // 12
  * ```
  */
 export function getReferenceDataMetadata(): Record<ReferenceTableId, ReferenceTableMetadata>;

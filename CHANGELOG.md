@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking changes
+
+- NIC day-of-year decoding now follows the ordinal “Birth day of the year” field
+  defined by Gazette Extraordinary No. 2145/05. Day `060` now resolves to 1 March
+  in a common year instead of 28 February, dates after February no longer use a
+  fixed 366-day table, and day `366` is rejected in a common year.
+
 ### Changed
 
 - `validateNic` and `validatePhone` check invalid input in a single pass instead of
