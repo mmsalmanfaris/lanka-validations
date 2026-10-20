@@ -87,21 +87,18 @@ export function isValidPostalCode(code: unknown): boolean {
  * ```
  */
 export function validatePostalCode(code: unknown): ValidationResult<PostalCodeInfo> {
-  const normalized = normalizePostalCode(code);
-  if (!normalized) {
+  const info = lookupPostalCode(code);
+  if (info) return createSuccess(info);
+
+  if (!normalizePostalCode(code)) {
     return createFailure(
       'Invalid postal code format. Expected a 5-digit code (e.g. "00100", "20000").',
       'POSTAL_CODE_INVALID_FORMAT',
     );
   }
 
-  const info = lookupPostalCode(normalized);
-  if (!info) {
-    return createFailure(
-      'Postal code is not within the bundled Sri Lankan postal district ranges.',
-      'POSTAL_CODE_OUT_OF_RANGE',
-    );
-  }
-
-  return createSuccess(info);
+  return createFailure(
+    'Postal code is not within the bundled Sri Lankan postal district ranges.',
+    'POSTAL_CODE_OUT_OF_RANGE',
+  );
 }

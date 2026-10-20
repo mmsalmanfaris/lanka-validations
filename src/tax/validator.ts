@@ -1,6 +1,8 @@
 import { cleanString, createFailure, createSuccess } from '../common/utils';
 import type { ValidationResult } from '../common/types';
 
+const TIN_PATTERN = /^\d{9,10}$/;
+
 /**
  * Validates the format of a Sri Lankan Taxpayer Identification Number (TIN) issued by IRD.
  * Accepts 9 or 10 digits. An NIC number is not a TIN: individuals register for a TIN
@@ -16,10 +18,7 @@ import type { ValidationResult } from '../common/types';
  * ```
  */
 export function isValidTIN(tin: unknown): boolean {
-  const cleaned = cleanString(tin).replace(/[\s-]/g, '');
-  if (!cleaned) return false;
-
-  return /^\d{9,10}$/.test(cleaned);
+  return TIN_PATTERN.test(cleanString(tin).replace(/[\s-]/g, ''));
 }
 
 /**
@@ -36,9 +35,10 @@ export function isValidTIN(tin: unknown): boolean {
  * ```
  */
 export function isValidVAT(vat: unknown): boolean {
-  const cleaned = cleanString(vat).replace(/\s/g, '');
-  if (!cleaned) return false;
+  return isVatFormat(cleanString(vat).replace(/\s/g, ''));
+}
 
+function isVatFormat(cleaned: string): boolean {
   // 9 digits followed by -7000
   if (/^\d{9}-7000$/.test(cleaned)) {
     return true;
@@ -70,14 +70,15 @@ export function validateTIN(tin: unknown): ValidationResult<string> {
     return createFailure('TIN is required.', 'TIN_REQUIRED');
   }
 
-  if (!isValidTIN(cleaned)) {
+  const digits = cleaned.replace(/[\s-]/g, '');
+  if (!TIN_PATTERN.test(digits)) {
     return createFailure(
       'Invalid Sri Lankan Taxpayer Identification Number (TIN). Expected 9-10 digits.',
       'TIN_INVALID',
     );
   }
 
-  return createSuccess(cleaned.replace(/[\s-]/g, ''));
+  return createSuccess(digits);
 }
 
 /**
@@ -97,7 +98,7 @@ export function validateVAT(vat: unknown): ValidationResult<string> {
     return createFailure('VAT number is required.', 'VAT_REQUIRED');
   }
 
-  if (!isValidVAT(cleaned)) {
+  if (!isVatFormat(cleaned.replace(/\s/g, ''))) {
     return createFailure(
       'Invalid Sri Lankan VAT number. Expected format: 9 digits (e.g. "123456789-7000").',
       'VAT_INVALID',

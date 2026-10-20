@@ -19,6 +19,6 @@
 
 export * from './types';
 export * from './constants';
-export * from './parser';
+export { normalizePhoneNumber, parsePhone } from './parser';
 export * from './validator';
 export * from './formatter';

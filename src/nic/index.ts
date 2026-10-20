@@ -18,7 +18,7 @@
  */
 
 export * from './types';
-export * from './parser';
+export { parseNic, parseNicDayOfYear } from './parser';
 export * from './validator';
 export * from './converter';
 export * from './formatter';
